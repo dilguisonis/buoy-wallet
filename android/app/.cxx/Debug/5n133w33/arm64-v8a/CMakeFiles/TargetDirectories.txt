@@ -1,0 +1,3 @@
+/home/danilo/Downloads/original/bouy/android/app/.cxx/Debug/5n133w33/arm64-v8a/CMakeFiles/dart_helper.dir
+/home/danilo/Downloads/original/bouy/android/app/.cxx/Debug/5n133w33/arm64-v8a/CMakeFiles/edit_cache.dir
+/home/danilo/Downloads/original/bouy/android/app/.cxx/Debug/5n133w33/arm64-v8a/CMakeFiles/rebuild_cache.dir

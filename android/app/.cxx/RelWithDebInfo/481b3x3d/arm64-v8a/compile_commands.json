@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/home/danilo/Downloads/original/bouy/android/app/.cxx/RelWithDebInfo/481b3x3d/arm64-v8a",
+  "command": "/home/danilo/Android/Sdk/ndk/23.1.7779620/toolchains/llvm/prebuilt/linux-x86_64/bin/clang --target=aarch64-none-linux-android27 --sysroot=/home/danilo/Android/Sdk/ndk/23.1.7779620/toolchains/llvm/prebuilt/linux-x86_64/sysroot -Ddart_helper_EXPORTS -I/home/danilo/Downloads/original/bouy/android/app/../../crypto/gdk/include -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -fexceptions -O2 -g -DNDEBUG -fPIC -o CMakeFiles/dart_helper.dir/home/danilo/Downloads/original/bouy/ffi/dart_helper/callbacks.c.o -c /home/danilo/Downloads/original/bouy/ffi/dart_helper/callbacks.c",
+  "file": "/home/danilo/Downloads/original/bouy/ffi/dart_helper/callbacks.c"
+}
+]

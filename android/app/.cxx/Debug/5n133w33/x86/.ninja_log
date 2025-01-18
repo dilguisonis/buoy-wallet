@@ -1,0 +1,18 @@
+# ninja log v5
+0	18	1733435394117231380	CMakeFiles/dart_helper.dir/home/danilo/Downloads/original/bouy/ffi/dart_helper/callbacks.c.o	f6452b389a515040
+19	37	1733435394135231553	/home/danilo/Downloads/original/bouy/build/app/intermediates/cxx/Debug/5n133w33/obj/x86/libdart_helper.so	60af8ccddeaed80
+1	94	1734209435056005185	/home/danilo/Downloads/original/bouy/build/app/intermediates/cxx/Debug/5n133w33/obj/x86/libdart_helper.so	60af8ccddeaed80
+1	1397	1734274502938877319	/home/danilo/Downloads/original/bouy/build/app/intermediates/cxx/Debug/5n133w33/obj/x86/libdart_helper.so	60af8ccddeaed80
+1	46	1734276839993720586	/home/danilo/Downloads/original/bouy/build/app/intermediates/cxx/Debug/5n133w33/obj/x86/libdart_helper.so	60af8ccddeaed80
+0	48	1734277067203841454	/home/danilo/Downloads/original/bouy/build/app/intermediates/cxx/Debug/5n133w33/obj/x86/libdart_helper.so	60af8ccddeaed80
+0	36	1734282382090091134	/home/danilo/Downloads/original/bouy/build/app/intermediates/cxx/Debug/5n133w33/obj/x86/libdart_helper.so	60af8ccddeaed80
+1	43	1734376489305522194	/home/danilo/Downloads/original/bouy/build/app/intermediates/cxx/Debug/5n133w33/obj/x86/libdart_helper.so	60af8ccddeaed80
+0	39	1734459053405630310	/home/danilo/Downloads/original/bouy/build/app/intermediates/cxx/Debug/5n133w33/obj/x86/libdart_helper.so	60af8ccddeaed80
+1	36	1734468310483030041	/home/danilo/Downloads/original/bouy/build/app/intermediates/cxx/Debug/5n133w33/obj/x86/libdart_helper.so	60af8ccddeaed80
+0	46	1734469200169318615	/home/danilo/Downloads/original/bouy/build/app/intermediates/cxx/Debug/5n133w33/obj/x86/libdart_helper.so	60af8ccddeaed80
+0	3	0	clean	a31eedcededa8236
+0	3	0	clean	a31eedcededa8236
+1	43	1734472604951041945	CMakeFiles/dart_helper.dir/home/danilo/Downloads/original/bouy/ffi/dart_helper/callbacks.c.o	f6452b389a515040
+43	86	1734472604979042153	/home/danilo/Downloads/original/bouy/build/app/intermediates/cxx/Debug/5n133w33/obj/x86/libdart_helper.so	60af8ccddeaed80
+0	72	1736183700343213542	/home/danilo/Downloads/original/bouy/build/app/intermediates/cxx/Debug/5n133w33/obj/x86/libdart_helper.so	60af8ccddeaed80
+0	28	1736183897149361039	/home/danilo/Downloads/original/bouy/build/app/intermediates/cxx/Debug/5n133w33/obj/x86/libdart_helper.so	60af8ccddeaed80

@@ -1,0 +1,8 @@
+# ninja log v5
+0	23	1733876668187963311	CMakeFiles/dart_helper.dir/home/danilo/Downloads/original/bouy/ffi/dart_helper/callbacks.c.o	dc03812fdefac77
+23	44	1733876668207963402	/home/danilo/Downloads/original/bouy/build/app/intermediates/cxx/RelWithDebInfo/481b3x3d/obj/x86_64/libdart_helper.so	43c0fab1a8bd31af
+0	20	1733877373023798300	/home/danilo/Downloads/original/bouy/build/app/intermediates/cxx/RelWithDebInfo/481b3x3d/obj/x86_64/libdart_helper.so	43c0fab1a8bd31af
+1	21	1733878949485070859	/home/danilo/Downloads/original/bouy/build/app/intermediates/cxx/RelWithDebInfo/481b3x3d/obj/x86_64/libdart_helper.so	43c0fab1a8bd31af
+0	3	0	clean	a31eedcededa8236
+0	20	1734473875410579263	CMakeFiles/dart_helper.dir/home/danilo/Downloads/original/bouy/ffi/dart_helper/callbacks.c.o	dc03812fdefac77
+20	37	1734473875427579390	/home/danilo/Downloads/original/bouy/build/app/intermediates/cxx/RelWithDebInfo/481b3x3d/obj/x86_64/libdart_helper.so	43c0fab1a8bd31af

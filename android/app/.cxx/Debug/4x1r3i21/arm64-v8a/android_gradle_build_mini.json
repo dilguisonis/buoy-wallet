@@ -1,0 +1,29 @@
+{
+  "buildFiles": [
+    "/Users/danilo/development/bouy/android/app/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/Users/danilo/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/Users/danilo/development/bouy/android/app/.cxx/Debug/4x1r3i21/arm64-v8a",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/Users/danilo/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/Users/danilo/development/bouy/android/app/.cxx/Debug/4x1r3i21/arm64-v8a",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "dart_helper::@6890427a1f51a3e7e1df": {
+      "artifactName": "dart_helper",
+      "abi": "arm64-v8a",
+      "output": "/Users/danilo/development/bouy/build/app/intermediates/cxx/Debug/4x1r3i21/obj/arm64-v8a/libdart_helper.so",
+      "runtimeFiles": [
+        "/Users/danilo/development/bouy/crypto/gdk/lib/arm64-v8a/libgreen_gdk_java.so"
+      ]
+    }
+  }
+}

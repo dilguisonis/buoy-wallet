@@ -1,0 +1,18 @@
+# ninja log v5
+0	24	1733435393480225306	CMakeFiles/dart_helper.dir/home/danilo/Downloads/original/bouy/ffi/dart_helper/callbacks.c.o	6f72768cdf68ca0d
+25	44	1733435393500225497	/home/danilo/Downloads/original/bouy/build/app/intermediates/cxx/Debug/5n133w33/obj/arm64-v8a/libdart_helper.so	e34b151768a5c387
+0	384	1734209433445994562	/home/danilo/Downloads/original/bouy/build/app/intermediates/cxx/Debug/5n133w33/obj/arm64-v8a/libdart_helper.so	e34b151768a5c387
+0	43593	1734274498655858518	/home/danilo/Downloads/original/bouy/build/app/intermediates/cxx/Debug/5n133w33/obj/arm64-v8a/libdart_helper.so	e34b151768a5c387
+0	58	1734276839772717185	/home/danilo/Downloads/original/bouy/build/app/intermediates/cxx/Debug/5n133w33/obj/arm64-v8a/libdart_helper.so	e34b151768a5c387
+1	58	1734277067064839742	/home/danilo/Downloads/original/bouy/build/app/intermediates/cxx/Debug/5n133w33/obj/arm64-v8a/libdart_helper.so	e34b151768a5c387
+0	40	1734282381915089802	/home/danilo/Downloads/original/bouy/build/app/intermediates/cxx/Debug/5n133w33/obj/arm64-v8a/libdart_helper.so	e34b151768a5c387
+0	28068	1734376376434717984	/home/danilo/Downloads/original/bouy/build/app/intermediates/cxx/Debug/5n133w33/obj/arm64-v8a/libdart_helper.so	e34b151768a5c387
+1	363	1734459053166629169	/home/danilo/Downloads/original/bouy/build/app/intermediates/cxx/Debug/5n133w33/obj/arm64-v8a/libdart_helper.so	e34b151768a5c387
+1	47	1734468310293028563	/home/danilo/Downloads/original/bouy/build/app/intermediates/cxx/Debug/5n133w33/obj/arm64-v8a/libdart_helper.so	e34b151768a5c387
+4	33	1734469199829316425	/home/danilo/Downloads/original/bouy/build/app/intermediates/cxx/Debug/5n133w33/obj/arm64-v8a/libdart_helper.so	e34b151768a5c387
+0	4	0	clean	a31eedcededa8236
+0	4	0	clean	a31eedcededa8236
+0	54	1734472604593039291	CMakeFiles/dart_helper.dir/home/danilo/Downloads/original/bouy/ffi/dart_helper/callbacks.c.o	6f72768cdf68ca0d
+54	102	1734472604642039654	/home/danilo/Downloads/original/bouy/build/app/intermediates/cxx/Debug/5n133w33/obj/arm64-v8a/libdart_helper.so	e34b151768a5c387
+1	515	1736183700103210731	/home/danilo/Downloads/original/bouy/build/app/intermediates/cxx/Debug/5n133w33/obj/arm64-v8a/libdart_helper.so	e34b151768a5c387
+0	39	1736183896980359315	/home/danilo/Downloads/original/bouy/build/app/intermediates/cxx/Debug/5n133w33/obj/arm64-v8a/libdart_helper.so	e34b151768a5c387
