@@ -101,18 +101,26 @@ class HomeScreen extends HookConsumerWidget with RestoreTransactionMixin {
           }
         },
         child: AnnotatedRegion(
-          value: const SystemUiOverlayStyle(
+          value: SystemUiOverlayStyle(
             statusBarColor: Colors.transparent,
+            statusBarIconBrightness: Theme.of(context).brightness == Brightness.light 
+                ? Brightness.dark 
+                : Brightness.light,
           ),
           child: Scaffold(
+            backgroundColor: Theme.of(context).colorScheme.background,
             body: SafeArea(
-              child: IndexedStack(
-                index: selectedTab.index,
-                children: const [
-                  WalletTab(),
-                  MarketplaceTab(),
-                  SettingsTab(),
-                ],
+              bottom: false, // Bottom navigation has its own SafeArea
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: IndexedStack(
+                  index: selectedTab.index,
+                  children: const [
+                    WalletTab(),
+                    MarketplaceTab(),
+                    SettingsTab(),
+                  ],
+                ),
               ),
             ),
             bottomNavigationBar: CustomBottomNavigationBar(

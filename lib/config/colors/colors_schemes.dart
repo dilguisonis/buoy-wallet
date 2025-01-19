@@ -165,45 +165,64 @@ abstract class AppColors {
   Color get cardColor;
 
   Color get containerColor;
+
+  Color get textPrimary;
+
+  Color get textSecondary;
+
+  Color get textTertiary;
+
+  Color get textHint;
 }
 
 //ANCHOR - Dark Theme Colors
 
 class DarkThemeColors implements AppColors {
   // Core Theme Colors
-  static const Color background = Color(0xFF121721);
-  static const Color surface = Color(0xFF1E2532);
-  static const Color primary = Color(0xFF4A89DC);
-  static const Color secondary = Color(0xFF2A3444);
+  static const Color background = Color(0xFF18181B);    // Deep gray
+  static const Color surface = Color(0xFF27272A);       // Lighter gray
+  static const Color surfaceAlt = Color(0xFF3F3F46);    // Medium gray
+  static const Color surfaceDeep = Color(0xFF52525B);   // Light gray
+  
+  // Action Colors
+  static const Color primary = Color(0xFFE4E4E7);       // Light gray for most UI
+  static const Color accent = Color(0xFF3B82F6);        // Blue - used sparingly for CTAs
 
   // Semantic Colors
-  static const Color errorColor = Color(0xFFE35C76);
-  static const Color errorDarkColor = Color(0xFFBF3B54);
-  static const Color successColor = Color(0xFF4ADC7B);
-  static const Color warningColor = Color(0xFFFFA726);
+  static const Color successColor = Color(0xFF22C55E);  // Success green
+  static const Color warningColor = Color(0xFFEAB308);  // Warning yellow
+  static const Color errorColor = Color(0xFFEF4444);    // Error red
 
-  // Text Colors
-  static const Color textPrimary = Color(0xFFF5F7FA);
-  static const Color textSecondary = Color(0xFFB8C2CC);
-  static const Color textHint = Color(0xFF95A5A6);
+  // Remove static declarations and just keep the getters
+  @override
+  Color get textPrimary => Color(0xFFF9FAFB);   // Almost white - for primary text
+
+  @override
+  Color get textSecondary => Color(0xFFD1D5DB); // Light gray - for secondary text
+
+  @override
+  Color get textTertiary => Color(0xFF9CA3AF);  // Medium gray - for tertiary text
+
+  @override
+  Color get textHint => Color(0xFF6B7280);      // Darker gray - for hints/placeholders
 
   @override
   ColorScheme get colorScheme => ColorScheme(
         brightness: Brightness.dark,
         primary: primary,
         onPrimary: Colors.white,
-        secondary: secondary,
+        secondary: accent,
         onSecondary: Colors.white,
         secondaryContainer: surface,
-        onSecondaryContainer: textPrimary,
+        onSecondaryContainer: Colors.white,
         primaryContainer: surface,
-        onPrimaryContainer: textPrimary,
+        onPrimaryContainer: Colors.white,
         tertiary: warningColor,
         onTertiary: Colors.black,
         surface: surface,
-        onSurface: textPrimary,
+        onSurface: Colors.white,
         background: background,
-        onBackground: textPrimary,
+        onBackground: Colors.white,
         error: errorColor,
         onError: Colors.white,
       );
@@ -243,7 +262,7 @@ class DarkThemeColors implements AppColors {
   Color get addressHistoryBackgroundColor => background;
 
   @override
-  Color get addressHistoryTabBarSelected => primary;
+  Color get addressHistoryTabBarSelected => accent;
 
   @override
   Color get addressHistoryTabBarTextSelected => textPrimary;
@@ -279,7 +298,7 @@ class DarkThemeColors implements AppColors {
   Color get bottomNavBarBorder => surface.withOpacity(0.12);
 
   @override
-  Color get bottomNavBarIconSelected => primary;
+  Color get bottomNavBarIconSelected => accent;
 
   @override
   Color get bottomNavBarIconUnselected => textSecondary;
@@ -315,13 +334,13 @@ class DarkThemeColors implements AppColors {
   Color get headerSubtitle => textSecondary;
 
   @override
-  Color get headerUsdContainerColor => surface;
+  Color get headerUsdContainerColor => surfaceDeep;
 
   @override
   Color get headerUsdContainerTextColor => textPrimary;
 
   @override
-  Color get helpScreenLogoColor => primary;
+  Color get helpScreenLogoColor => accent;
 
   @override
   Color get hintTextColor => textHint;
@@ -393,7 +412,7 @@ class DarkThemeColors implements AppColors {
   Color get swapAssetPickerPopUpItemBackground => surface;
 
   @override
-  Color get swapButtonBackground => primary;
+  Color get swapButtonBackground => accent;
 
   @override
   Color get swapButtonForeground => Colors.black;
@@ -405,7 +424,7 @@ class DarkThemeColors implements AppColors {
   Color get swapReviewScreenBackgroundColor => background;
 
   @override
-  Color get tabSelectedBackground => primary;
+  Color get tabSelectedBackground => accent;
 
   @override
   Color get tabSelectedForeground => Colors.white;
@@ -432,7 +451,7 @@ class DarkThemeColors implements AppColors {
   Color get usdContainerSendRecieveAssets => surface;
 
   @override
-  Color get usdPillBackgroundColor => surface;
+  Color get usdPillBackgroundColor => surfaceDeep.withOpacity(0.9);
 
   @override
   Color get usdPillTextColor => textPrimary;
@@ -453,89 +472,110 @@ class DarkThemeColors implements AppColors {
 //ANCHOR - Light Theme Colors
 
 class LightThemeColors implements AppColors {
-  // Palette Principal - Celestes (60%)
-  static const Color background = Color(0xFFF0F9FF);    // Celeste más claro
-  static const Color surface = Color(0xFFE0F2FE);       // Celeste suave
-  static const Color surfaceAlt = Color(0xFFBAE6FD);    // Celeste medio
-  static const Color surfaceDeep = Color(0xFF7DD3FC);   // Celeste profundo
-  static const Color primary = Color(0xFF0EA5E9);       // Celeste principal
-  static const Color primaryDark = Color(0xFF0284C7);   // Celeste oscuro
+  // Core Colors - Modern Gray Scale (80%)
+  static const Color background = Color(0xFFFAFAFA);    // Almost white
+  static const Color surface = Color(0xFFF4F4F5);       // Light gray
+  static const Color surfaceAlt = Color(0xFFE4E4E7);    // Medium light gray
+  static const Color surfaceDeep = Color(0xFFD4D4D8);   // Deeper gray
   
-  // Palette Secundaria - Naranjas (30%)
-  static const Color secondary = Color(0xFFF97316);     // Naranja principal
-  static const Color secondaryLight = Color(0xFFFFB380); // Naranja claro
-  static const Color secondaryMedium = Color(0xFFFB923C); // Naranja medio
-  static const Color secondaryDark = Color(0xFFEA580C);  // Naranja oscuro
-  static const Color tertiaryOrange = Color(0xFFFD8A4B); // Naranja terciario
+  // Action Colors (20%)
+  static const Color primary = Color(0xFF3F3F46);       // Dark gray for most UI
+  static const Color primaryDark = Color(0xFF27272A);   // Darker gray
+  static const Color accent = Color(0xFF3B82F6);        // Blue - used sparingly for CTAs
   
-  // Palette Accent - Highlights (10%)
-  static const Color accent1 = Color(0xFF38BDF8);      // Celeste brillante
-  static const Color accent2 = Color(0xFFFB923C);      // Naranja brillante
-  static const Color accent3 = Color(0xFF0369A1);      // Celeste profundo accent
+  // Semantic Colors
+  static const Color successColor = Color(0xFF22C55E);
+  static const Color warningColor = Color(0xFFEAB308);
+  static const Color errorColor = Color(0xFFEF4444);
   
-  // Semantic Colors - Estados
-  static const Color successLight = Color(0xFFD1FAE5);  // Verde claro
-  static const Color successColor = Color(0xFF059669);  // Verde principal
-  static const Color successDark = Color(0xFF047857);   // Verde oscuro
-  static const Color warningLight = Color(0xFFFEF3C7);  // Amarillo claro
-  static const Color warning = Color(0xFFF59E0B);       // Amarillo principal
-  static const Color warningDark = Color(0xFFD97706);   // Amarillo oscuro
-  static const Color errorLight = Color(0xFFFEE2E2);    // Rojo claro
-  static const Color errorColor = Color(0xFFDC2626);    // Rojo principal
-  static const Color errorDark = Color(0xFFB91C1C);     // Rojo oscuro
-  
-  // Text Colors - Jerarquía de texto
-  static const Color textPrimary = Color(0xFF0C4A6E);   // Texto principal
-  static const Color textSecondary = Color(0xFF0369A1); // Texto secundario
-  static const Color textTertiary = Color(0xFF0891B2);  // Texto terciario
-  static const Color textHint = Color(0xFF7DD3FC);      // Texto hint
+  // Remove static declarations and just keep the getters
+  @override
+  Color get textPrimary => Color(0xFF111827);   // Almost black - for primary text
 
-  // Colores específicos para Swap
-  static const Color swapGradientStart = Color(0xFF0EA5E9);  // Celeste vibrante
-  static const Color swapGradientEnd = Color(0xFF0284C7);    // Celeste profundo
-  static const Color swapInputBg = Color(0xFFE0F2FE);        // Fondo suave para inputs
-  static const Color swapAccentHighlight = Color(0xFFF97316); // Naranja para acciones
-  static const Color swapRatesBg = Color(0xFFBAE6FD);        // Fondo para tasas
-  
+  @override
+  Color get textSecondary => Color(0xFF374151); // Dark gray - for secondary text
+
+  @override
+  Color get textTertiary => Color(0xFF4B5563);  // Medium gray - for tertiary text
+
+  @override
+  Color get textHint => Color(0xFF6B7280);      // Light gray - for hints/placeholders
+
   @override
   ColorScheme get colorScheme => ColorScheme(
     brightness: Brightness.light,
     primary: primary,
     onPrimary: Colors.white,
-    primaryContainer: surfaceAlt,
-    onPrimaryContainer: primaryDark,
-    secondary: secondary,
+    secondary: accent,
     onSecondary: Colors.white,
-    secondaryContainer: secondaryLight.withOpacity(0.15),
-    onSecondaryContainer: secondaryDark,
-    tertiary: accent1,
-    onTertiary: Colors.white,
-    tertiaryContainer: accent1.withOpacity(0.15),
-    onTertiaryContainer: accent3,
+    secondaryContainer: surfaceAlt,
+    onSecondaryContainer: Colors.black,
+    primaryContainer: surfaceAlt,
+    onPrimaryContainer: Colors.black,
+    tertiary: warningColor,
+    onTertiary: Colors.black,
     surface: surface,
-    onSurface: textPrimary,
-    surfaceVariant: surfaceAlt,
-    onSurfaceVariant: textSecondary,
+    onSurface: Colors.black,
     background: background,
-    onBackground: textPrimary,
+    onBackground: Colors.black,
     error: errorColor,
     onError: Colors.white,
-    errorContainer: errorLight,
-    onErrorContainer: errorDark,
   );
 
-  // Implementaciones de AppColors
+  @override
+  Color get scaffoldBackgroundColor => background;
+
   @override
   Color get success => successColor;
 
   @override
   Color get error => errorColor;
 
+  // Implementing all required getters similar to DarkThemeColors
+  @override
+  Color get divider => surfaceAlt.withOpacity(0.12);
+
+  @override
+  Color get walletHeaderDivider => surfaceAlt.withOpacity(0.12);
+
+  @override
+  Color get dottedDivider => surfaceAlt.withOpacity(0.12);
+
+  @override
+  Color get addressHistoryHintTextColor => textHint;
+
+  @override
+  Color get addressHistoryItemBackground => surface;
+
+  @override
+  Color get addressHistoryNoHistoryIconColor => textSecondary;
+
+  @override
+  Color get addressHistoryNoHistoryTextColor => textSecondary;
+
+  @override
+  Color get addressFieldContainerBackgroundColor => surface;
+
+  @override
+  Color get addressHistoryBackgroundColor => background;
+
+  @override
+  Color get addressHistoryTabBarSelected => accent;
+
+  @override
+  Color get addressHistoryTabBarTextSelected => textPrimary;
+
+  @override
+  Color get addressHistoryTabBarTextUnSelected => textSecondary;
+
+  @override
+  Color get addressHistoryTabBarUnSelected => surface;
+
   @override
   Color get altScreenBackground => background;
 
   @override
-  Color get altScreenSurface => surfaceAlt;
+  Color get altScreenSurface => surface;
 
   @override
   Color get appBarBackgroundColor => background;
@@ -556,31 +596,31 @@ class LightThemeColors implements AppColors {
   Color get bottomNavBarBorder => surfaceAlt.withOpacity(0.12);
 
   @override
-  Color get bottomNavBarIconSelected => primary;
+  Color get bottomNavBarIconSelected => accent;
 
   @override
   Color get bottomNavBarIconUnselected => textSecondary.withOpacity(0.7);
 
   @override
-  Color get cardColor => surfaceDeep;
+  Color get cardColor => surface;
 
   @override
   Color get cardOutlineColor => surfaceAlt.withOpacity(0.12);
 
   @override
-  Color get containerColor => surfaceAlt;
+  Color get containerColor => surface;
 
   @override
-  Color get conversionRateSwapScreenBackgroundColor => swapRatesBg;
+  Color get conversionRateSwapScreenBackgroundColor => surface;
 
   @override
-  Color get conversionRateSwapScreenColor => textPrimary;
+  Color get conversionRateSwapScreenColor => textSecondary;
 
   @override
   Color get copayableTextColor => textSecondary;
 
   @override
-  Color get disabledBackgroundColorAquaElevatedButton => surfaceAlt.withOpacity(0.5);
+  Color get disabledBackgroundColorAquaElevatedButton => surface.withOpacity(0.5);
 
   @override
   Color get greenBTCDeltaColor => successColor;
@@ -598,7 +638,7 @@ class LightThemeColors implements AppColors {
   Color get headerUsdContainerTextColor => textPrimary;
 
   @override
-  Color get helpScreenLogoColor => primary;
+  Color get helpScreenLogoColor => accent;
 
   @override
   Color get hintTextColor => textHint;
@@ -610,31 +650,31 @@ class LightThemeColors implements AppColors {
   Color get iconForeground => textPrimary;
 
   @override
-  Color get inputBackground => surfaceAlt;
+  Color get inputBackground => surface;
 
   @override
-  Color get inverseSurfaceColor => surfaceDeep;
+  Color get inverseSurfaceColor => background;
 
   @override
-  Color get keyboardBackground => surfaceDeep;
+  Color get keyboardBackground => surface;
 
   @override
   Color get listItemRoundedIconBackground => surfaceDeep;
 
   @override
-  Color get menuBackground => surfaceAlt;
+  Color get menuBackground => surface;
 
   @override
-  Color get menuSurface => surfaceAlt;
+  Color get menuSurface => surface;
 
   @override
   Color get neutraBTCDeltaColor => textSecondary;
 
   @override
-  Color get notificationButtonBackground => surfaceAlt;
+  Color get notificationButtonBackground => surface;
 
   @override
-  Color get popUpMenuButtonSwapScreenBorderColor => surfaceAlt.withOpacity(0.2);
+  Color get popUpMenuButtonSwapScreenBorderColor => surfaceAlt.withOpacity(0.12);
 
   @override
   Color get popUpMenuButtonSwapScreenTextColor => textPrimary;
@@ -655,34 +695,31 @@ class LightThemeColors implements AppColors {
   Color get roundedButtonOutlineColor => surfaceAlt.withOpacity(0.12);
 
   @override
-  Color get scaffoldBackgroundColor => background;
-
-  @override
   Color get sendAssetPrioritySelectedText => textPrimary;
 
   @override
   Color get sendAssetPriorityUnselectedBorder => surfaceAlt.withOpacity(0.12);
 
   @override
-  Color get sendMaxButtonBackgroundColor => surfaceAlt;
+  Color get sendMaxButtonBackgroundColor => surface;
 
   @override
-  Color get swapAssetPickerPopUpItemBackground => swapInputBg;
+  Color get swapAssetPickerPopUpItemBackground => surface;
 
   @override
-  Color get swapButtonBackground => swapAccentHighlight;
+  Color get swapButtonBackground => accent;
 
   @override
   Color get swapButtonForeground => Colors.white;
 
   @override
-  Color get swapConversionRateViewTextColor => Colors.white;
+  Color get swapConversionRateViewTextColor => textSecondary;
 
   @override
   Color get swapReviewScreenBackgroundColor => background;
 
   @override
-  Color get tabSelectedBackground => primary;
+  Color get tabSelectedBackground => accent;
 
   @override
   Color get tabSelectedForeground => Colors.white;
@@ -697,16 +734,16 @@ class LightThemeColors implements AppColors {
   Color get transactionAppBarBackgroundColor => background;
 
   @override
-  Color get usdCenterPillBackgroundColor => surfaceAlt;
+  Color get usdCenterPillBackgroundColor => surface;
 
   @override
-  Color get usdContainerBackgroundColor => surfaceAlt;
+  Color get usdContainerBackgroundColor => surface;
 
   @override
-  Color get usdContainerColor => surfaceAlt;
+  Color get usdContainerColor => surface;
 
   @override
-  Color get usdContainerSendRecieveAssets => surfaceAlt;
+  Color get usdContainerSendRecieveAssets => surface;
 
   @override
   Color get usdPillBackgroundColor => surfaceDeep.withOpacity(0.9);
@@ -715,7 +752,7 @@ class LightThemeColors implements AppColors {
   Color get usdPillTextColor => textPrimary;
 
   @override
-  Color get versionBackground => surfaceAlt;
+  Color get versionBackground => surface;
 
   @override
   Color get versionForeground => textSecondary;
@@ -724,46 +761,7 @@ class LightThemeColors implements AppColors {
   Color get walletRemoveTextColor => errorColor;
 
   @override
-  Color get walletTabButtonBackgroundColor => surfaceAlt;
-
-  @override
-  Color get divider => surfaceAlt.withOpacity(0.12);
-
-  @override
-  Color get walletHeaderDivider => surfaceAlt.withOpacity(0.12);
-
-  @override
-  Color get dottedDivider => surfaceAlt.withOpacity(0.12);
-
-  @override
-  Color get addressFieldContainerBackgroundColor => surfaceAlt;
-
-  @override
-  Color get addressHistoryBackgroundColor => background;
-
-  @override
-  Color get addressHistoryHintTextColor => textHint;
-
-  @override
-  Color get addressHistoryItemBackground => surfaceAlt;
-
-  @override
-  Color get addressHistoryNoHistoryIconColor => textSecondary;
-
-  @override
-  Color get addressHistoryNoHistoryTextColor => textSecondary;
-
-  @override
-  Color get addressHistoryTabBarSelected => primary;
-
-  @override
-  Color get addressHistoryTabBarTextSelected => textPrimary;
-
-  @override
-  Color get addressHistoryTabBarTextUnSelected => textSecondary;
-
-  @override
-  Color get addressHistoryTabBarUnSelected => surfaceAlt;
+  Color get walletTabButtonBackgroundColor => surface;
 }
 
 //ANCHOR - Botev Mode Theme Colors

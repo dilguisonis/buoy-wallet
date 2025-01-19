@@ -36,33 +36,33 @@ class AppTypography {
                 ),
             displayMedium: Theme.of(context).textTheme.displayMedium?.copyWith(
                   fontSize: 45.sp,
-                  color: colors.colorScheme.onBackground,
+                  color: isDark ? colors.textPrimary : colors.textPrimary,
                   fontWeight: FontWeight.bold,
                   fontFamily: UiFontFamily.helveticaNeue,
                 ),
             displaySmall: Theme.of(context).textTheme.displaySmall?.copyWith(
                   fontSize: 36.sp,
-                  color: colors.colorScheme.onBackground,
+                  color: isDark ? colors.textPrimary : colors.textPrimary,
                   fontWeight: FontWeight.bold,
                   fontFamily: UiFontFamily.helveticaNeue,
                 ),
             //ANCHOR - Headline
             headlineLarge: Theme.of(context).textTheme.headlineLarge?.copyWith(
                   fontSize: 32.sp,
-                  color: colors.colorScheme.onBackground,
+                  color: isDark ? colors.textPrimary : colors.textPrimary,
                   fontWeight: FontWeight.bold,
                   fontFamily: UiFontFamily.helveticaNeue,
                 ),
             headlineMedium:
                 Theme.of(context).textTheme.headlineMedium?.copyWith(
                       fontSize: 28.sp,
-                      color: colors.colorScheme.onBackground,
+                      color: isDark ? colors.textPrimary : colors.textPrimary,
                       fontWeight: FontWeight.bold,
                       fontFamily: UiFontFamily.helveticaNeue,
                     ),
             headlineSmall: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontSize: 24.sp,
-                  color: colors.colorScheme.onBackground,
+                  color: isDark ? colors.textPrimary : colors.textPrimary,
                   fontWeight: FontWeight.bold,
                   fontFamily: UiFontFamily.helveticaNeue,
                 ),
@@ -70,14 +70,14 @@ class AppTypography {
             titleLarge: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontSize:
                       context.adaptiveDouble(mobile: 22.sp, wideMobile: 20.sp),
-                  color: colors.colorScheme.onBackground,
+                  color: isDark ? colors.textPrimary : colors.textPrimary,
                   fontWeight: FontWeight.bold,
                   fontFamily: UiFontFamily.helveticaNeue,
                 ),
             titleMedium: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontSize:
                       context.adaptiveDouble(mobile: 16.sp, wideMobile: 14.sp),
-                  color: colors.colorScheme.onBackground,
+                  color: isDark ? colors.textPrimary : colors.textPrimary,
                   fontWeight: FontWeight.bold,
                   fontFamily: UiFontFamily.helveticaNeue,
                   letterSpacing: .15,
@@ -85,7 +85,7 @@ class AppTypography {
             titleSmall: Theme.of(context).textTheme.titleSmall?.copyWith(
                   fontSize:
                       context.adaptiveDouble(mobile: 14.sp, wideMobile: 12.sp),
-                  color: colors.colorScheme.onBackground,
+                  color: isDark ? colors.textPrimary : colors.textPrimary,
                   fontWeight: FontWeight.bold,
                   fontFamily: UiFontFamily.helveticaNeue,
                   letterSpacing: .1,
@@ -94,13 +94,13 @@ class AppTypography {
             labelLarge: Theme.of(context).textTheme.labelLarge?.copyWith(
                   fontSize:
                       context.adaptiveDouble(mobile: 16.sp, wideMobile: 14.sp),
-                  color: Theme.of(context).colorScheme.onBackground,
+                  color: isDark ? colors.textPrimary : colors.textPrimary,
                   fontFamily: UiFontFamily.helveticaNeue,
                 ),
             labelMedium: Theme.of(context).textTheme.labelMedium?.copyWith(
                   fontSize:
                       context.adaptiveDouble(mobile: 14.sp, wideMobile: 12.sp),
-                  color: colors.colorScheme.onBackground,
+                  color: isDark ? colors.textPrimary : colors.textPrimary,
                   fontFamily: UiFontFamily.helveticaNeue,
                 ),
             labelSmall: Theme.of(context).textTheme.labelSmall?.copyWith(
@@ -110,19 +110,19 @@ class AppTypography {
                 ),
             //ANCHOR - Body
             bodyLarge: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: colors.colorScheme.onBackground,
+                  color: isDark ? colors.textPrimary : colors.textPrimary,
                   fontSize:
                       context.adaptiveDouble(mobile: 16.sp, wideMobile: 14.sp),
                   fontFamily: UiFontFamily.helveticaNeue,
                 ),
             bodyMedium: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: colors.colorScheme.onBackground,
+                  color: isDark ? colors.textPrimary : colors.textPrimary,
                   fontSize:
                       context.adaptiveDouble(mobile: 14.sp, wideMobile: 12.sp),
                   fontFamily: UiFontFamily.helveticaNeue,
                 ),
             bodySmall: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: colors.colorScheme.onBackground,
+                  color: isDark ? colors.textPrimary : colors.textPrimary,
                   fontSize:
                       context.adaptiveDouble(mobile: 12.sp, wideMobile: 10.sp),
                   fontFamily: UiFontFamily.helveticaNeue,
