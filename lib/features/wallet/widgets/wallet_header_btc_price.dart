@@ -12,6 +12,19 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 // Create a provider to manage the visibility state
 final balanceVisibilityProvider = StateProvider<bool>((ref) => true);
 
+// Add this provider at the top with the balanceVisibilityProvider
+final logoProvider = Provider<SvgGenImage>((ref) {
+  final darkMode = ref.watch(prefsProvider.select((p) => p.isDarkMode));
+  final botevMode = ref.watch(prefsProvider.select((p) => p.isBotevMode));
+  
+  if (botevMode) {
+    return UiAssets.svgs.light.aquaLogo;
+  }
+  return darkMode
+      ? UiAssets.svgs.dark.aquaLogo
+      : UiAssets.svgs.light.aquaLogo;
+});
+
 class WalletHeaderBtcPrice extends HookConsumerWidget {
   const WalletHeaderBtcPrice({super.key});
 
@@ -21,6 +34,7 @@ class WalletHeaderBtcPrice extends HookConsumerWidget {
     final btcPrice = ref.watch(btcPriceProvider(0));
     final currentRate = ref.watch(exchangeRatesProvider.select((p) => p.currentCurrency));
     final isBalanceVisible = ref.watch(balanceVisibilityProvider);
+    final logo = ref.watch(logoProvider);  // Use the provider instead of useMemoized
     
     return assetsState.when(
       data: (assetsList) {
@@ -51,6 +65,64 @@ class WalletHeaderBtcPrice extends HookConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Wallet identifier section
+            Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Center(
+                    child: logo.svg(
+                      width: 28,
+                      height: 28,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(8),
+                    onTap: () {
+                      // We'll add the popup logic later
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                      child: Row(
+                        children: [
+                          Text(
+                            'bc1q...x8j4',
+                            style: GoogleFonts.poppins(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Icon(
+                            Icons.keyboard_arrow_down_rounded,
+                            size: 20,
+                            color: Colors.grey[600],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
             Row(
               children: [
                 Text(
