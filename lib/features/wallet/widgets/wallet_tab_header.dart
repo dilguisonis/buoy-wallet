@@ -34,66 +34,46 @@ class WalletTabHeader extends HookConsumerWidget {
           : UiAssets.svgs.light.aquaLogo;
     }, [darkMode, botevMode]);
 
-    return Container(
-      height: 100.h,
-      decoration: BoxDecoration(
-        color: context.colors.headerBackgroundColor,
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(9.r),
-          bottomRight: Radius.circular(9.r),
+    return SafeArea(
+      bottom: false,
+      maintainBottomViewPadding: false,
+      child: Container(
+        padding: EdgeInsets.only(
+          left: 12.w,
+          right: 20.w,
+          top: 24.h,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            offset: const Offset(4, 4),
-            blurRadius: 20,
-            spreadRadius: 4,
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Expanded(
-            child: SafeArea(
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 20.w,
-                  vertical: 10.h,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: const WalletHeaderBtcPrice(),
-                    ),
-                    
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (showNotification)
-                          Padding(
-                            padding: EdgeInsets.only(right: 10.w),
-                            child: UiAssets.svgs.walletHeaderNotification.svg(
-                              width: 30.r,
-                              height: 30.r,
-                              colorFilter: ColorFilter.mode(
-                                context.colors.notificationButtonBackground,
-                                BlendMode.srcIn,
-                              ),
-                            ),
-                          ),
-                        logo.svg(width: aquaLogoSize),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: const WalletHeaderBtcPrice(),
             ),
-          ),
-          //ANCHOR - Send, Receive and Scan buttons
-          //const WalletExchangeButtonsPanel(),
-        ],
+            
+            // Temporarily hiding notification and logo
+            /*
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (showNotification)
+                  Padding(
+                    padding: EdgeInsets.only(right: 10.w),
+                    child: UiAssets.svgs.walletHeaderNotification.svg(
+                      width: 30.r,
+                      height: 30.r,
+                      colorFilter: ColorFilter.mode(
+                        context.colors.notificationButtonBackground,
+                        BlendMode.srcIn,
+                      ),
+                    ),
+                  ),
+                logo.svg(width: aquaLogoSize),
+              ],
+            ),
+            */
+          ],
+        ),
       ),
     );
   }

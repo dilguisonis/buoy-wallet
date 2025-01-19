@@ -24,10 +24,12 @@ class WalletTab extends ConsumerWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        return const Stack(
+        return Column(
           children: [
-            CategorizedAssetList(),
-            WalletTabHeader(),
+            const WalletTabHeader(),
+            const Expanded(
+              child: CategorizedAssetList(),
+            ),
           ],
         );
       },
