@@ -473,10 +473,10 @@ class DarkThemeColors implements AppColors {
 
 class LightThemeColors implements AppColors {
   // Core Colors - Modern Gray Scale (80%)
-  static const Color background = Color(0xFFFAFAFA);    // Almost white
-  static const Color surface = Color(0xFFF4F4F5);       // Light gray
-  static const Color surfaceAlt = Color(0xFFE4E4E7);    // Medium light gray
-  static const Color surfaceDeep = Color(0xFFD4D4D8);   // Deeper gray
+  static const Color background = Color(0xFFF7F8FA);    // Light grayish blue background
+  static const Color surface = Color(0xFFFEFEFE);       // Pure white for components
+  static const Color surfaceAlt = Color(0xFFFEFEFE);    // Also white for consistency
+  static const Color surfaceDeep = Color(0xFFFEFEFE);   // Also white for consistency
   
   // Action Colors (20%)
   static const Color primary = Color(0xFF3F3F46);       // Dark gray for most UI
@@ -602,13 +602,13 @@ class LightThemeColors implements AppColors {
   Color get bottomNavBarIconUnselected => textSecondary.withOpacity(0.7);
 
   @override
-  Color get cardColor => surface;
+  Color get cardColor => surface;  // White cards
 
   @override
   Color get cardOutlineColor => surfaceAlt.withOpacity(0.12);
 
   @override
-  Color get containerColor => surface;
+  Color get containerColor => surface;  // White containers
 
   @override
   Color get conversionRateSwapScreenBackgroundColor => surface;
@@ -632,7 +632,7 @@ class LightThemeColors implements AppColors {
   Color get headerSubtitle => textSecondary;
 
   @override
-  Color get headerUsdContainerColor => surfaceDeep;
+  Color get headerUsdContainerColor => surface;  // Changed to white
 
   @override
   Color get headerUsdContainerTextColor => textPrimary;
@@ -659,13 +659,13 @@ class LightThemeColors implements AppColors {
   Color get keyboardBackground => surface;
 
   @override
-  Color get listItemRoundedIconBackground => surfaceDeep;
+  Color get listItemRoundedIconBackground => surface;  // Changed to white
 
   @override
-  Color get menuBackground => surface;
+  Color get menuBackground => surface;  // Changed to white
 
   @override
-  Color get menuSurface => surface;
+  Color get menuSurface => surface;  // Changed to white
 
   @override
   Color get neutraBTCDeltaColor => textSecondary;
@@ -734,19 +734,19 @@ class LightThemeColors implements AppColors {
   Color get transactionAppBarBackgroundColor => background;
 
   @override
-  Color get usdCenterPillBackgroundColor => surface;
+  Color get usdCenterPillBackgroundColor => surface;  // Changed to white
 
   @override
-  Color get usdContainerBackgroundColor => surface;
+  Color get usdContainerBackgroundColor => surface;  // Changed to white
 
   @override
-  Color get usdContainerColor => surface;
+  Color get usdContainerColor => surface;  // Changed to white
 
   @override
   Color get usdContainerSendRecieveAssets => surface;
 
   @override
-  Color get usdPillBackgroundColor => surfaceDeep.withOpacity(0.9);
+  Color get usdPillBackgroundColor => surface;  // Changed to white
 
   @override
   Color get usdPillTextColor => textPrimary;
