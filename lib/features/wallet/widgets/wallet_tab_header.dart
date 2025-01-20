@@ -39,39 +39,24 @@ class WalletTabHeader extends HookConsumerWidget {
       maintainBottomViewPadding: false,
       child: Container(
         padding: EdgeInsets.only(
-          left: 12.w,
-          right: 20.w,
           top: 24.h,
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Column(
           children: [
-            Expanded(
-              child: const WalletHeaderBtcPrice(),
-            ),
-            
-            // Temporarily hiding notification and logo
-            /*
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (showNotification)
-                  Padding(
-                    padding: EdgeInsets.only(right: 10.w),
-                    child: UiAssets.svgs.walletHeaderNotification.svg(
-                      width: 30.r,
-                      height: 30.r,
-                      colorFilter: ColorFilter.mode(
-                        context.colors.notificationButtonBackground,
-                        BlendMode.srcIn,
-                      ),
-                    ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12.w),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: const WalletHeaderBtcPrice(),
                   ),
-                logo.svg(width: aquaLogoSize),
-              ],
+                ],
+              ),
             ),
-            */
+            SizedBox(height: 16.h),
+            const WalletExchangeButtonsPanel(),
           ],
         ),
       ),

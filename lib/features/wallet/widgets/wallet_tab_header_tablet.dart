@@ -17,8 +17,8 @@ class WalletTabHeaderTablet extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: EdgeInsets.only(left: 21.w, right: 28.w),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 21.w),
             child: Row(
               children: [
                 //ANCHOR - Logo

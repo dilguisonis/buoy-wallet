@@ -8,6 +8,9 @@ import 'package:aqua/data/provider/conversion_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:aqua/features/wallet/widgets/widgets.dart';
+import 'package:aqua/screens/qrscanner/qr_scanner_screen.dart';
 
 // Create a provider to manage the visibility state
 final balanceVisibilityProvider = StateProvider<bool>((ref) => true);
@@ -24,6 +27,34 @@ final logoProvider = Provider<SvgGenImage>((ref) {
       ? UiAssets.svgs.dark.aquaLogo
       : UiAssets.svgs.light.aquaLogo;
 });
+
+// Add these providers at the top with the other providers
+final defaultAccountNameProvider = Provider<String>((ref) => 'Account 1');
+
+final accountNameProvider = StateNotifierProvider<AccountNameNotifier, String>((ref) {
+  return AccountNameNotifier(ref.watch(defaultAccountNameProvider));
+});
+
+// Add this class to manage the account name state
+class AccountNameNotifier extends StateNotifier<String> {
+  AccountNameNotifier(String defaultName) : super(defaultName) {
+    _loadAccountName();
+  }
+
+  Future<void> _loadAccountName() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedName = prefs.getString('account_name');
+    if (savedName != null) {
+      state = savedName;
+    }
+  }
+
+  Future<void> updateAccountName(String newName) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('account_name', newName);
+    state = newName;
+  }
+}
 
 class WalletHeaderBtcPrice extends HookConsumerWidget {
   const WalletHeaderBtcPrice({super.key});
@@ -98,14 +129,21 @@ class WalletHeaderBtcPrice extends HookConsumerWidget {
                       child: InkWell(
                         borderRadius: BorderRadius.circular(8),
                         onTap: () {
-                          // We'll add the popup logic later
+                          showModalBottomSheet(
+                            context: context,
+                            backgroundColor: Theme.of(context).colorScheme.surface,
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                            ),
+                            builder: (context) => const AccountDetailsModal(),
+                          );
                         },
                         child: Padding(
                           padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                           child: Row(
                             children: [
                               Text(
-                                'bc1q...x8j4',
+                                ref.watch(accountNameProvider),
                                 style: GoogleFonts.poppins(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
@@ -127,15 +165,20 @@ class WalletHeaderBtcPrice extends HookConsumerWidget {
                 ),
                 // QR Scan button
                 Padding(
-                  padding: EdgeInsets.only(right: 4.w),  // Reduced right padding to move closer to edge
+                  padding: EdgeInsets.only(right: 4.w),
                   child: Material(
                     color: Colors.transparent,
                     child: InkWell(
                       borderRadius: BorderRadius.circular(20),
                       onTap: () {
-                        // We'll add the scan functionality later
+                        Navigator.of(context).pushNamed(
+                          QrScannerScreen.routeName,
+                          arguments: QrScannerScreenArguments(
+                            parseAction: QrScannerParseAction.parse,
+                          ),
+                        );
                       },
-                      child: Ink(  // Added Ink widget for better ripple effect
+                      child: Ink(
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: Colors.white,
