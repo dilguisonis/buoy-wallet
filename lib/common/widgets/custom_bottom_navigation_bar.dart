@@ -22,7 +22,7 @@ class CustomBottomNavigationBar extends HookWidget {
         highlightColor: Colors.transparent,
       ),
       child: Container(
-        height: 115.h,
+        height: 80.h,
         decoration: BoxDecoration(
           color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
           border: Border(
@@ -43,7 +43,7 @@ class CustomBottomNavigationBar extends HookWidget {
         padding: EdgeInsets.only(
           left: 53.w,
           right: 53.w,
-          bottom: 20.h,
+          bottom: 15.h,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -93,28 +93,32 @@ class _CustomBottomNavigationBarItem extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          icon.svg(
-            width: 40.r,
-            height: 40.r,
-            colorFilter: ColorFilter.mode(
-              selected
-                  ? context.colors.bottomNavBarIconSelected
-                  : context.colors.bottomNavBarIconUnselected,
-              BlendMode.srcIn,
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            width: selected ? 35.r : 32.r,
+            height: selected ? 35.r : 32.r,
+            child: icon.svg(
+              colorFilter: ColorFilter.mode(
+                selected 
+                    ? Theme.of(context).colorScheme.onBackground
+                    : Theme.of(context).colorScheme.onBackground.withOpacity(0.5),
+                BlendMode.srcIn,
+              ),
             ),
           ),
-          SizedBox(height: 10.h),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 12.sp,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0,
-              color: selected
-                  ? context.colors.bottomNavBarIconSelected
-                  : context.colors.bottomNavBarIconUnselected,
+          SizedBox(height: 4.h),
+          AnimatedOpacity(
+            duration: const Duration(milliseconds: 200),
+            opacity: selected ? 1.0 : 0.0,
+            child: Container(
+              width: 3.r,
+              height: 3.r,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.onBackground,
+                shape: BoxShape.circle,
+              ),
             ),
           ),
         ],
