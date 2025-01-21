@@ -26,8 +26,18 @@ class SettingsTab extends HookConsumerWidget {
     final versionText = kDebugMode ? '$version (${env.name})' : version;
     final languageCode = ref.watch(languageProvider(context)
         .select((p) => p.currentLanguage.languageCode));
-    final currentRate =
-        ref.watch(exchangeRatesProvider.select((p) => p.currentCurrency));
+    
+    // Manejamos el caso de error cuando no hay internet usando try-catch
+    String currentRate = 'USD';
+    try {
+      final exchangeRates = ref.watch(exchangeRatesProvider);
+      if (exchangeRates.currentCurrency != null) {
+        currentRate = exchangeRates.currentCurrency!.currency.value;
+      }
+    } catch (e) {
+      // Si hay error, mantenemos el valor por defecto 'USD'
+    }
+
     final region = ref.watch(regionsProvider.select((p) => p.currentRegion));
     final isDirectPegInEnabled =
         ref.watch(prefsProvider.select((p) => p.isDirectPegInEnabled));
@@ -81,6 +91,7 @@ class SettingsTab extends HookConsumerWidget {
             SizedBox(height: 22.h),
             //ANCHOR - Language
             MenuItemWidget.labeledArrow(
+              
               context: context,
               assetName: Svgs.language,
               title: context.loc.settingsScreenItemLanguage,
@@ -93,7 +104,7 @@ class SettingsTab extends HookConsumerWidget {
               context: context,
               assetName: Svgs.exchangeRate,
               title: context.loc.refExRateSettingsScreenTitle,
-              label: currentRate.currency.value,
+              label: currentRate,
               onPressed: () => Navigator.of(context)
                   .pushNamed(ExchangeRateSettingsScreen.routeName),
             ),
@@ -262,6 +273,8 @@ class SettingsTab extends HookConsumerWidget {
             Center(
               child: SvgPicture.asset(
                 darkMode ? Svgs.jan3LogoLight : Svgs.jan3LogoDark,
+                width: 200.w,
+                height: 300.h,
               ),
             ),
             SizedBox(height: 11.h),
