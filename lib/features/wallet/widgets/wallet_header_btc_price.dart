@@ -11,6 +11,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:aqua/features/wallet/widgets/widgets.dart';
 import 'package:aqua/screens/qrscanner/qr_scanner_screen.dart';
+import 'package:http/http.dart' as http;
+import 'dart:async';
 
 // Create a provider to manage the visibility state
 final balanceVisibilityProvider = StateProvider<bool>((ref) => true);
@@ -59,39 +61,101 @@ class AccountNameNotifier extends StateNotifier<String> {
 class WalletHeaderBtcPrice extends HookConsumerWidget {
   const WalletHeaderBtcPrice({super.key});
 
+  Future<bool> _checkConnectivity() async {
+    try {
+      final response = await http
+          .get(Uri.parse('https://green-bitcoin-mainnet.blockstream.com/prices'))
+          .timeout(const Duration(seconds: 5));
+      return response.statusCode == 200;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  void _showNoInternetDialog(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: Text(
+          'No Internet Connection',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        content: Text(
+          'Please check your internet connection and try again.',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              Navigator.of(context).pop();
+              if (await _checkConnectivity()) {
+                ref.invalidate(btcPriceProvider(0));
+                ref.invalidate(assetsProvider);
+              }
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final assetsState = ref.watch(assetsProvider);
     final btcPrice = ref.watch(btcPriceProvider(0));
-    final currentRate = ref.watch(exchangeRatesProvider.select((p) => p.currentCurrency));
     final isBalanceVisible = ref.watch(balanceVisibilityProvider);
-    final logo = ref.watch(logoProvider);  // Use the provider instead of useMemoized
-    
+    final logo = ref.watch(logoProvider);
+
+    useEffect(() {
+      Timer? reconnectTimer;
+
+      if (btcPrice is AsyncError) {
+        reconnectTimer = Timer.periodic(const Duration(seconds: 15), (_) async {
+          if (context.mounted && await _checkConnectivity()) {
+            ref.invalidate(btcPriceProvider(0));
+            ref.invalidate(assetsProvider);
+          }
+        });
+      }
+
+      return () {
+        reconnectTimer?.cancel();
+      };
+    }, [btcPrice is AsyncError]);
+
     return assetsState.when(
       data: (assetsList) {
-        final savingAssetList = assetsList.where((asset) => asset.isBTC).toList();
-        final spendingAssetList = assetsList.where((asset) => !asset.isBTC).toList();
-        
         double totalUsdValue = 0;
         
-        // Calculamos el total para BTC assets
-        for (final asset in savingAssetList) {
+        print('=== Lista completa de Assets ===');
+        for (final asset in assetsList) {
           final usdAmount = ref.watch(conversionProvider((asset, asset.amount)));
-          final value = _parseUsdAmount(usdAmount);
-          if (value != null) {
-            totalUsdValue += value;
+          print('Asset: ${asset.ticker} - Amount: ${asset.amount} - USD Value: $usdAmount');
+          print('Asset Details:');
+          print('  - ID: ${asset.id}');
+          print('  - Name: ${asset.name}');
+          print('  - isBTC: ${asset.isBTC}');
+          print('  - Balance: ${asset.amount}');
+          
+          // Manejo especial para USDt
+          if (asset.ticker == 'USDt') {
+            // USDt está en satoshis (1e8), necesitamos dividir por 100000000
+            final usdtValue = asset.amount / 100000000;
+            totalUsdValue += usdtValue;
+            print('  - Calculated USDt value: $usdtValue USD');
+          } else {
+            final value = _parseUsdAmount(usdAmount);
+            if (value != null) {
+              totalUsdValue += value;
+            }
           }
+          print('------------------------');
         }
+        print('Total USD Value: $totalUsdValue');
+        print('===========================');
         
-        // Calculamos el total para otros assets
-        for (final asset in spendingAssetList) {
-          final usdAmount = ref.watch(conversionProvider((asset, asset.amount)));
-          final value = _parseUsdAmount(usdAmount);
-          if (value != null) {
-            totalUsdValue += value;
-          }
-        }
-
         return Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -223,50 +287,55 @@ class WalletHeaderBtcPrice extends HookConsumerWidget {
               ],
             ),
             const SizedBox(height: 6),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.baseline,
-              textBaseline: TextBaseline.alphabetic,
-              children: [
-                Text(
-                  isBalanceVisible 
-                    ? '\$${totalUsdValue.toStringAsFixed(2)}'
-                    : '\$********',
-                  style: GoogleFonts.poppins(
-                    fontSize: 40,
-                    fontWeight: FontWeight.w600,
-                    color: Theme.of(context).colorScheme.onBackground,
-                    height: 1,
-                    letterSpacing: -0.5,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  'USD',
-                  style: GoogleFonts.poppins(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                    height: 1,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
             btcPrice.when(
               data: (uiModel) {
                 final btcPriceValue = double.tryParse(uiModel.price.replaceAll(',', '')) ?? 1.0;
-                return Text(
-                  isBalanceVisible
-                    ? '≈ ${(totalUsdValue / btcPriceValue).toStringAsFixed(6)} BTC'
-                    : '≈ ******** BTC',
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                  ),
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
+                      children: [
+                        Text(
+                          isBalanceVisible 
+                            ? '\$${totalUsdValue.toStringAsFixed(2)}'
+                            : '\$********',
+                          style: GoogleFonts.poppins(
+                            fontSize: 40,
+                            fontWeight: FontWeight.w600,
+                            color: Theme.of(context).colorScheme.onBackground,
+                            height: 1,
+                            letterSpacing: -0.5,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'USD',
+                          style: GoogleFonts.poppins(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
+                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                            height: 1,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      isBalanceVisible
+                        ? '≈ ${(totalUsdValue / btcPriceValue).toStringAsFixed(8)} BTC'
+                        : '≈ ******** BTC',
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                      ),
+                    ),
+                  ],
                 );
               },
-              loading: () => const SizedBox.shrink(),
+              loading: () => const CircularProgressIndicator(),
               error: (_, __) => const SizedBox.shrink(),
             ),
           ],
