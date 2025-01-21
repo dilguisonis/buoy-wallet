@@ -110,20 +110,37 @@ class WalletHeaderBtcPrice extends HookConsumerWidget {
 
     useEffect(() {
       Timer? reconnectTimer;
+      bool wasError = false;
 
-      if (btcPrice is AsyncError) {
-        reconnectTimer = Timer.periodic(const Duration(seconds: 15), (_) async {
-          if (context.mounted && await _checkConnectivity()) {
+      void checkAndReconnect() async {
+        if (await _checkConnectivity()) {
+          if (wasError && context.mounted) {
+            // Recargar datos cuando se recupera la conexión
             ref.invalidate(btcPriceProvider(0));
             ref.invalidate(assetsProvider);
+            ref.invalidate(conversionProvider);
+            wasError = false;
           }
-        });
+        } else {
+          wasError = true;
+        }
+      }
+
+      // Iniciar timer para verificar conectividad
+      reconnectTimer = Timer.periodic(const Duration(seconds: 15), (_) {
+        checkAndReconnect();
+      });
+
+      // Verificar inmediatamente si hay un error
+      if (btcPrice is AsyncError || assetsState is AsyncError) {
+        wasError = true;
+        checkAndReconnect();
       }
 
       return () {
         reconnectTimer?.cancel();
       };
-    }, [btcPrice is AsyncError]);
+    }, [btcPrice is AsyncError, assetsState is AsyncError]);
 
     return assetsState.when(
       data: (assetsList) {

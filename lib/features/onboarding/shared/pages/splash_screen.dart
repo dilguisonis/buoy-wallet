@@ -71,6 +71,7 @@ class SplashScreen extends HookConsumerWidget {
                         maxHeight: constraints.maxHeight * 0.2, // 20% del alto disponible
                       ),
                       child: UiAssets.svgs.aquaLogoColorSpaced.svg(
+                        color: Colors.transparent,
                         fit: BoxFit.contain,
                       ),
                     ),
