@@ -26,8 +26,8 @@ class SettingsTab extends HookConsumerWidget {
     final versionText = kDebugMode ? '$version (${env.name})' : version;
     final languageCode = ref.watch(languageProvider(context)
         .select((p) => p.currentLanguage.languageCode));
-    
-    // Manejamos el caso de error cuando no hay internet usando try-catch
+    //REVERTED
+    // Manejamos el caso de error cuando no hay internet usando try-catch 
     String currentRate = 'USD';
     try {
       final exchangeRates = ref.watch(exchangeRatesProvider);

@@ -5,7 +5,7 @@ import 'package:aqua/features/settings/settings.dart';
 import 'package:aqua/features/shared/shared.dart';
 import 'package:aqua/utils/utils.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-
+//reverted
 class SplashScreen extends HookConsumerWidget {
   static const routeName = '/splash';
 

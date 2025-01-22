@@ -13,7 +13,7 @@ import 'package:aqua/features/wallet/widgets/widgets.dart';
 import 'package:aqua/screens/qrscanner/qr_scanner_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
-
+//REVERTED
 // Create a provider to manage the visibility state
 final balanceVisibilityProvider = StateProvider<bool>((ref) => true);
 
