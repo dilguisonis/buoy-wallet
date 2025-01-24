@@ -136,9 +136,10 @@ class TransactionsTitle extends StatelessWidget {
 }
 
 class _AssetTransactionListItem extends HookConsumerWidget {
-  const _AssetTransactionListItem(this.itemUiModel);
+  const _AssetTransactionListItem(this.itemUiModel, {this.showAsset = false});
 
   final TransactionUiModel itemUiModel;
+  final bool showAsset;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -220,12 +221,48 @@ class _AssetTransactionListItem extends HookConsumerWidget {
                               children: [
                                 //ANCHOR - Transaction Type
                                 Flexible(
-                                  child: Text(
-                                    itemUiModel.type(context),
-                                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                                      fontSize: 13.sp,
-                                      color: Theme.of(context).colorScheme.onSurface,
-                                    ),
+                                  child: Row(
+                                    children: [
+                                      if (showAsset) ...[
+                                        Container(
+                                          width: 20.w,
+                                          height: 20.h,
+                                          margin: EdgeInsets.only(right: 8.w),
+                                          child: Image.asset(
+                                            itemUiModel.asset.logoUrl,
+                                            width: 20.w,
+                                            height: 20.h,
+                                          ),
+                                        ),
+                                        Text(
+                                          itemUiModel.asset.ticker,
+                                          style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                                            fontSize: 13.sp,
+                                            color: Theme.of(context).colorScheme.onSurface,
+                                          ),
+                                        ),
+                                        SizedBox(width: 8.w),
+                                        Container(
+                                          width: 4.w,
+                                          height: 4.h,
+                                          margin: EdgeInsets.symmetric(horizontal: 4.w),
+                                          decoration: BoxDecoration(
+                                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                                            shape: BoxShape.circle,
+                                          ),
+                                        ),
+                                      ],
+                                      Flexible(
+                                        child: Text(
+                                          itemUiModel.type(context),
+                                          style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                                            fontSize: 13.sp,
+                                            color: Theme.of(context).colorScheme.onSurface,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                                 //ANCHOR - USD Equivalent
@@ -250,9 +287,10 @@ class _AssetTransactionListItem extends HookConsumerWidget {
 }
 
 class _GhostAssetTransactionListItem extends HookConsumerWidget {
-  const _GhostAssetTransactionListItem(this.itemUiModel);
+  const _GhostAssetTransactionListItem(this.itemUiModel, {this.showAsset = false});
 
   final GhostTransactionUiModel itemUiModel;
+  final bool showAsset;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -263,7 +301,7 @@ class _GhostAssetTransactionListItem extends HookConsumerWidget {
       radius: Radius.circular(12.r),
       borderType: BorderType.RRect,
       dashPattern: [4.w, 6.w],
-      child: _AssetTransactionListItem(itemUiModel),
+      child: _AssetTransactionListItem(itemUiModel, showAsset: showAsset),
     );
   }
 }

@@ -1,3 +1,4 @@
+export 'all_transactions_provider.dart';
 export 'ghost_transaction_details_provider.dart';
 export 'transaction_details_provider.dart';
 export 'transactions_provider.dart';

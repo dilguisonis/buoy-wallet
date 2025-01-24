@@ -339,5 +339,11 @@ mixin Routes {
         settings: settings,
       );
     },
+    AllTransactionsScreen.routeName: (settings) {
+      return MaterialPageRoute<Object>(
+        builder: (context) => const AllTransactionsScreen(),
+        settings: settings,
+      );
+    },
   };
 }

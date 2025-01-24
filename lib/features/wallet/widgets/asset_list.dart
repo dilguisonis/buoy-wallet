@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:aqua/constants.dart';
 import 'package:aqua/features/settings/settings.dart';
 import 'package:aqua/features/shared/shared.dart';
+import 'package:aqua/features/transactions/transactions.dart';
 import 'package:aqua/features/wallet/wallet.dart';
 import 'package:aqua/utils/utils.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -49,8 +50,8 @@ class AssetsList extends HookConsumerWidget {
       ),
       child: ListView(
         padding: EdgeInsets.only(
-          left: 28.w,
-          right: 28.w,
+          left: 4.w,
+          right: 4.w,
           bottom: 16.h,
           top: 34.h,
         ),
@@ -60,6 +61,9 @@ class AssetsList extends HookConsumerWidget {
         ),
         children: [
           SizedBox(height: 12.h),
+          // Recent Transactions Panel
+          const RecentTransactionsPanel(),
+          SizedBox(height: 24.h),
           //ANCHOR - Savings Header
           AssetListSectionHeader(
             text: context.loc.tabSavings,
