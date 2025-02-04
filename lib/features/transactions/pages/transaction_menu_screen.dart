@@ -90,7 +90,12 @@ class TransactionMenuScreen extends HookConsumerWidget {
                             curatedAssets: curatedAssets,
                             type: type,
                           ),
+
+                          //SACAMOS LAS SHITCOINS
+                           /*
                           SizedBox(height: 32.h),
+
+                         
                           if (otherAssets.isNotEmpty) ...[
                             //ANCHOR - Other Assets Section
                             Text(
@@ -104,6 +109,7 @@ class TransactionMenuScreen extends HookConsumerWidget {
                               type: type,
                             ),
                           ],
+                          */
                           SizedBox(height: 32.h),
                         ],
                       ),

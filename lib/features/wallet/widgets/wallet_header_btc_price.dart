@@ -13,6 +13,7 @@ import 'package:aqua/features/wallet/widgets/widgets.dart';
 import 'package:aqua/screens/qrscanner/qr_scanner_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
+import 'package:webview_flutter/webview_flutter.dart';
 //REVERTED
 // Create a provider to manage the visibility state
 final balanceVisibilityProvider = StateProvider<bool>((ref) => true);
@@ -58,6 +59,85 @@ class AccountNameNotifier extends StateNotifier<String> {
   }
 }
 
+// Agregamos el controlador singleton al inicio del archivo
+class WebViewControllerSingleton {
+  static WebViewControllerSingleton? _instance;
+  WebViewController? controller;
+
+  WebViewControllerSingleton._();
+
+  static WebViewControllerSingleton get instance {
+    _instance ??= WebViewControllerSingleton._();
+    return _instance!;
+  }
+
+  Future<WebViewController> getController() async {
+    if (controller != null) return controller!;
+
+    controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(const Color(0xFFFFFFFF))
+      ..enableZoom(false)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageFinished: (String url) {
+            print('Page finished loading: $url');
+          },
+          onWebResourceError: (WebResourceError error) {
+            print('Error loading page: ${error.description}');
+          },
+        ),
+      )
+      ..loadHtmlString('''
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+          <style>
+            body {
+              margin: 0;
+              padding: 0;
+              background-color: #ffffff;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              min-height: 100vh;
+              overflow: hidden;
+            }
+            .widget-container {
+              width: 100%;
+              height: 100%;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              background-color: #ffffff;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="widget-container">
+            <div 
+              class="livecoinwatch-widget-1" 
+              lcw-coin="BTC" 
+              lcw-base="USD" 
+              lcw-secondary="BTC" 
+              lcw-period="d" 
+              lcw-color-tx="#000000" 
+              lcw-color-pr="#0693e3" 
+              lcw-color-bg="#ffffff" 
+              lcw-border-w="0">
+            </div>
+            <script defer src="https://www.livecoinwatch.com/static/lcw-widget.js"></script>
+          </div>
+        </body>
+        </html>
+      ''');
+
+    return controller!;
+  }
+}
+
 class WalletHeaderBtcPrice extends HookConsumerWidget {
   const WalletHeaderBtcPrice({super.key});
 
@@ -72,41 +152,22 @@ class WalletHeaderBtcPrice extends HookConsumerWidget {
     }
   }
 
-  void _showNoInternetDialog(BuildContext context, WidgetRef ref) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'No Internet Connection',
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
-        content: Text(
-          'Please check your internet connection and try again.',
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () async {
-              Navigator.of(context).pop();
-              if (await _checkConnectivity()) {
-                ref.invalidate(btcPriceProvider(0));
-                ref.invalidate(assetsProvider);
-              }
-            },
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final assetsState = ref.watch(assetsProvider);
     final btcPrice = ref.watch(btcPriceProvider(0));
     final isBalanceVisible = ref.watch(balanceVisibilityProvider);
     final logo = ref.watch(logoProvider);
+    final webViewController = useState<WebViewController?>(null);
+
+    useEffect(() {
+      WebViewControllerSingleton.instance.getController().then((controller) {
+        if (context.mounted) {
+          webViewController.value = controller;
+        }
+      });
+      return null;
+    }, const []);
 
     useEffect(() {
       Timer? reconnectTimer;
@@ -332,6 +393,59 @@ class WalletHeaderBtcPrice extends HookConsumerWidget {
                         color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                       ),
                     ),
+                    // Nuevo widget de precio de BTC
+                    //const SizedBox(height: 8),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 8.h),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          /*
+                          Text(
+                            context.loc.walletBitcoinPriceTitle,
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Theme.of(context).colorScheme.onSurface,
+                              fontSize: 14,
+                            ),
+                          ),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                "${ref.watch(exchangeRatesProvider.select((p) => p.currentCurrency)).currency.symbol}${uiModel.price}",
+                                style: GoogleFonts.arimo(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 16,
+                                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                ),
+                              ),
+                              if (uiModel.priceChange.isNotEmpty) ...[
+                                SizedBox(width: 8.w),
+                                Text(
+                                  '${uiModel.priceChange} ${uiModel.priceChangePercent}',
+                                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                    fontSize: 14,
+                                    color: int.parse(uiModel.priceChange).isNegative
+                                        ? Theme.of(context).colors.redBTCDeltaColor
+                                        : Theme.of(context).colors.greenBTCDeltaColor,
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),*/
+                        ],
+                      ),
+                    ),
+                    // LiveCoinWatch Chart Widget
+                    //const SizedBox(height: 16),
+                    if (webViewController.value != null)
+                      Container(
+                        height: 150,
+                        padding: EdgeInsets.symmetric(horizontal: 4.w),
+                        child: WebViewWidget(
+                          controller: webViewController.value!,
+                        ),
+                      ),
                   ],
                 );
               },

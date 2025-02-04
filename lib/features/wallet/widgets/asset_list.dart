@@ -60,11 +60,7 @@ class AssetsList extends HookConsumerWidget {
           parent: AlwaysScrollableScrollPhysics(),
         ),
         children: [
-          SizedBox(height: 12.h),
-          // Recent Transactions Panel
-          const RecentTransactionsPanel(),
-          SizedBox(height: 24.h),
-          //ANCHOR - Savings Header
+
           AssetListSectionHeader(
             text: context.loc.tabSavings,
           ),
@@ -89,6 +85,15 @@ class AssetsList extends HookConsumerWidget {
               : AssetListErrorView(
                   message: context.loc.manageAssetsScreenError,
                 ),
+
+          SizedBox(height: 12.h),
+          // Recent Transactions Panel
+         
+         const RecentTransactionsPanel(),
+        
+        
+          SizedBox(height: 24.h),
+          //ANCHOR - Savings Header
         ],
       ),
     );

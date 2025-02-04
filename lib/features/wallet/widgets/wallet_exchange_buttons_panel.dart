@@ -13,7 +13,7 @@ class WalletExchangeButtonsPanel extends ConsumerWidget {
       padding: EdgeInsets.only(
         left: 4.w,
         right: 4.w,
-        top: 12.h,
+        top: 4.h,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,

@@ -14,6 +14,8 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:aqua/features/receive/receive.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:aqua/logger.dart';
+import 'package:flutter/material.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class MarketplaceTab extends HookConsumerWidget {
   const MarketplaceTab({super.key});
@@ -150,18 +152,14 @@ class MarketplaceView extends HookConsumerWidget {
                         : () async {
                             final btcAddress = btcAddressAsync.asData?.value;
                             if (btcAddress != null) {
-                              final url = 'https://www.buoyanalytics.com/merchandise/?btcaddress=$btcAddress';
-                              
-                              try {
-                                if (await canLaunchUrl(Uri.parse(url))) {
-                                  await launchUrl(
-                                    Uri.parse(url),
-                                    mode: LaunchMode.externalApplication,
-                                  );
-                                }
-                              } catch (e) {
-                                logger.e('[Marketplace] Error launching URL: $e');
-                              }
+                              print('=== BTC Address ===');
+                              print('Address: $btcAddress');
+                              print('==================');
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => GuardianBuyScreen(btcAddress: btcAddress),
+                                ),
+                              );
                             }
                           },
                   );
@@ -230,6 +228,124 @@ class MarketplaceView extends HookConsumerWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class GuardianBuyScreen extends StatefulWidget {
+  final String btcAddress;
+  
+  const GuardianBuyScreen({
+    required this.btcAddress,
+    super.key,
+  });
+
+  @override
+  State<GuardianBuyScreen> createState() => _GuardianBuyScreenState();
+}
+
+class _GuardianBuyScreenState extends State<GuardianBuyScreen> {
+  late final WebViewController _controller;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(const Color(0xFF030017))
+      ..enableZoom(false)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageStarted: (String url) {
+            setState(() {
+              _isLoading = true;
+            });
+          },
+          onPageFinished: (String url) async {
+            await _controller.runJavaScript('''
+              document.body.style.backgroundColor = '#030017';
+              
+              var style = document.createElement('style');
+              style.textContent = `
+                .calculator-widget {
+                  background-color: #030017 !important;
+                }
+              `;
+              document.head.appendChild(style);
+            ''');
+            
+            setState(() {
+              _isLoading = false;
+            });
+          },
+        ),
+      )
+      ..loadRequest(Uri.parse(_buildIframeSrc()));
+  }
+
+  String _buildIframeSrc() {
+    final iframeSrc = "https://guardarian.com/calculator/v1"
+      "?partner_api_token=3095b887-3164-4b1f-8051-142bac0c7ab3"
+      "&theme=gradient"
+      "&type=narrow"
+      "&crypto_currencies_list=[{\"ticker\":\"BTC\",\"network\":\"BTC\"}]"
+      "&default_side=buy_crypto"
+      "&side_toggle_disabled=true"
+      "&default_fiat_currency=ARS"
+      "&default_crypto_currency=BTC"
+      "&calc_background=rgb(0,0,128)"
+      "&body_background=%23030017"
+      "&skip_choose_payment_category=false"
+      "&create_nav_behaviour=new_tab"
+      "&payout_address=${Uri.encodeComponent(widget.btcAddress)}"
+      "&skip_choose_payout_address=false";
+
+    return iframeSrc;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF030017),
+      appBar: AppBar(
+        title: Text(context.loc.marketplaceScreenBuyButton),
+        backgroundColor: const Color(0xFF030017),
+        elevation: 0,
+      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Text(
+                'Buy Bitcoin',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontFamily: 'Arial',
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            Expanded(
+              child: Stack(
+                children: [
+                  WebViewWidget(
+                    controller: _controller,
+                  ),
+                  if (_isLoading)
+                    const Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

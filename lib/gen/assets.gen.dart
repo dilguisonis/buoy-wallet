@@ -13,18 +13,27 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart' as _svg;
 import 'package:lottie/lottie.dart' as _lottie;
+import 'package:rive/rive.dart' as _rive;
 import 'package:vector_graphics/vector_graphics.dart' as _vg;
 
 class $AssetsAnimationsGen {
   const $AssetsAnimationsGen();
 
   /// File path: assets/animations/create_wallet.flr
-  FlareGenImage get createWallet =>
+  FlareGenImage get createWalletFlr =>
       const FlareGenImage('assets/animations/create_wallet.flr');
 
+  /// File path: assets/animations/create_wallet.riv
+  RiveGenImage get createWalletRiv =>
+      const RiveGenImage('assets/animations/create_wallet.riv');
+
   /// File path: assets/animations/mellow.flr
-  FlareGenImage get mellow =>
+  FlareGenImage get mellowFlr =>
       const FlareGenImage('assets/animations/mellow.flr');
+
+  /// File path: assets/animations/mellow.riv
+  RiveGenImage get mellowRiv =>
+      const RiveGenImage('assets/animations/mellow.riv');
 
   /// File path: assets/animations/tick.json
   LottieGenImage get tick =>
@@ -44,8 +53,10 @@ class $AssetsAnimationsGen {
 
   /// List of all assets
   List<dynamic> get values => [
-        createWallet,
-        mellow,
+        createWalletFlr,
+        createWalletRiv,
+        mellowFlr,
+        mellowRiv,
         tick,
         tickBotev,
         transactionProcessing,
@@ -66,9 +77,6 @@ class $AssetsAssetIconsGen {
   SvgGenImage get ethusdt =>
       const SvgGenImage('assets/asset_icons/ETHUSDT.svg');
 
-  /// File path: assets/asset_icons/L2.svg
-  SvgGenImage get l2 => const SvgGenImage('assets/asset_icons/L2.svg');
-
   /// File path: assets/asset_icons/Lightning.svg
   SvgGenImage get lightning =>
       const SvgGenImage('assets/asset_icons/Lightning.svg');
@@ -83,12 +91,15 @@ class $AssetsAssetIconsGen {
   SvgGenImage get tronusdt =>
       const SvgGenImage('assets/asset_icons/TRONUSDT.svg');
 
-  /// File path: assets/asset_icons/USDt.svg
-  SvgGenImage get uSDt => const SvgGenImage('assets/asset_icons/USDt.svg');
+  /// File path: assets/asset_icons/USDt_1.svg
+  SvgGenImage get uSDt1 => const SvgGenImage('assets/asset_icons/USDt_1.svg');
 
   /// File path: assets/asset_icons/asset_unknown.svg
   SvgGenImage get assetUnknown =>
       const SvgGenImage('assets/asset_icons/asset_unknown.svg');
+
+  /// File path: assets/asset_icons/l2.svg
+  SvgGenImage get l2 => const SvgGenImage('assets/asset_icons/l2.svg');
 
   /// File path: assets/asset_icons/l2_disabled.svg
   SvgGenImage get l2Disabled =>
@@ -126,6 +137,9 @@ class $AssetsAssetIconsGen {
   SvgGenImage get qrIconTronUsdt =>
       const SvgGenImage('assets/asset_icons/qr_icon_tron_usdt.svg');
 
+  /// File path: assets/asset_icons/usdt.svg
+  SvgGenImage get usdt => const SvgGenImage('assets/asset_icons/usdt.svg');
+
   /// File path: assets/asset_icons/usdt_disabled.svg
   SvgGenImage get usdtDisabled =>
       const SvgGenImage('assets/asset_icons/usdt_disabled.svg');
@@ -143,13 +157,13 @@ class $AssetsAssetIconsGen {
         btc,
         dePix,
         ethusdt,
-        l2,
         lightning,
         liquid,
         mex,
         tronusdt,
-        uSDt,
+        uSDt1,
         assetUnknown,
+        l2,
         l2Disabled,
         layerTwoDual,
         layerTwoSingle,
@@ -159,6 +173,7 @@ class $AssetsAssetIconsGen {
         qrIconLiquidBtc,
         qrIconLiquidUsdt,
         qrIconTronUsdt,
+        usdt,
         usdtDisabled,
         whatsappLogo,
         zendeskLogo
@@ -2299,6 +2314,47 @@ class FlareGenImage {
       sizeFromArtboard: sizeFromArtboard,
       artboard: artboard,
       antialias: antialias,
+    );
+  }
+
+  String get path => _assetName;
+
+  String get keyName => _assetName;
+}
+
+class RiveGenImage {
+  const RiveGenImage(
+    this._assetName, {
+    this.flavors = const {},
+  });
+
+  final String _assetName;
+  final Set<String> flavors;
+
+  _rive.RiveAnimation rive({
+    String? artboard,
+    List<String> animations = const [],
+    List<String> stateMachines = const [],
+    BoxFit? fit,
+    Alignment? alignment,
+    Widget? placeHolder,
+    bool antialiasing = true,
+    bool useArtboardSize = false,
+    List<_rive.RiveAnimationController> controllers = const [],
+    _rive.OnInitCallback? onInit,
+  }) {
+    return _rive.RiveAnimation.asset(
+      _assetName,
+      artboard: artboard,
+      animations: animations,
+      stateMachines: stateMachines,
+      fit: fit,
+      alignment: alignment,
+      placeHolder: placeHolder,
+      antialiasing: antialiasing,
+      useArtboardSize: useArtboardSize,
+      controllers: controllers,
+      onInit: onInit,
     );
   }
 

@@ -72,6 +72,7 @@ class SplashScreen extends HookConsumerWidget {
                       ),
                       child: UiAssets.svgs.aquaLogoColorSpaced.svg(
                         fit: BoxFit.contain,
+                        color: Colors.transparent
                       ),
                     ),
                   ),
