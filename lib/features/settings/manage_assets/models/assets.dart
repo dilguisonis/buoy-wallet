@@ -41,8 +41,9 @@ class Asset with _$Asset {
     @Default(0) int amount,
     @Default(8) int precision,
     @Default(false) bool isLiquid,
-    @Default(false) bool isLBTC,
+    @JsonKey(name: 'IsLBTC') @Default(false) bool isLBTC,
     @Default(false) bool isUSDt,
+    @JsonKey(name: 'IsBTC') @Default(false) bool isBTC,
   }) = _Asset;
 
   factory Asset.btc({int amount = 0}) => Asset(
@@ -54,6 +55,7 @@ class Asset with _$Asset {
         isLiquid: false,
         isLBTC: false,
         isUSDt: false,
+        isBTC: true,
         amount: amount,
       );
 
@@ -113,6 +115,19 @@ class Asset with _$Asset {
         isUSDt: false,
       );
 
+  factory Asset.sendBTCwithLBTC({int amount = 0, bool isTestnet = false}) => Asset(
+        name: isTestnet ? 'Swap tBTC/tL-BTC' : 'Swap BTC/L-BTC',
+        id: isTestnet ? 'swap-tbtc-tlbtc' : 'swap-btc-lbtc',
+        ticker: isTestnet ? 'tSWAP' : 'SWAP',
+        logoUrl: Svgs.btcAsset,
+        isDefaultAsset: true,
+        isLiquid: true,
+        isLBTC: false,
+        isUSDt: false,
+        isBTC: true,
+        amount: amount,
+      );
+
   factory Asset.fromJson(Map<String, dynamic> json) => _$AssetFromJson(json);
 }
 
@@ -121,7 +136,9 @@ extension AssetExt on Asset {
 
   static String get lBtcTestnetTicker => 'tL-BTC';
 
-  bool get isBTC => id == 'btc';
+  bool get isBTC => id == 'btc' || id == 'tbtc' || this.isBTC;
+
+  bool get isTestnet => id.startsWith('t') || id.contains('test');
 
   bool get isLBTC => ticker == lBtcMainnetTicker || ticker == lBtcTestnetTicker;
 
@@ -139,6 +156,10 @@ extension AssetExt on Asset {
 
   bool get isTrx => this == Asset.usdtTrx();
 
+  bool get isSwapBtcLbtc => id == 'swap-btc-lbtc' || id == 'swap-tbtc-tlbtc';
+
+  bool get isSwapTestnet => id == 'swap-tbtc-tlbtc';
+
   /// `isLayerTwo` only counts lightning or lbtc - no other liquid assets
   bool get isLayerTwo => isLightning || isLBTC;
 
@@ -147,13 +168,13 @@ extension AssetExt on Asset {
   bool get isAnyAltUsdt => isEth || isTrx;
 
   /// any asset not denominated in sats
-  bool get isNonSatsAsset => !isBTC && !isLBTC && !isLightning;
+  bool get isNonSatsAsset => !isBTC && !isLBTC && !isLightning && !isSwapBtcLbtc;
 
   bool get isUnknown => logoUrl == Svgs.unknownAsset;
 
   bool get selectable => !isBTC && !isLBTC && !isUSDt;
 
-  bool get hasFiatRate => isBTC || isLBTC || isLightning;
+  bool get hasFiatRate => isBTC || isLBTC || isLightning || isSwapBtcLbtc;
 
   UsdtOption get usdtOption {
     return isUsdtLiquid
@@ -165,16 +186,21 @@ extension AssetExt on Asset {
 
   NetworkType get networkType =>
       isBTC ? NetworkType.bitcoin : NetworkType.liquid;
-}
 
-extension CompatibleExt on Asset {
-  /// Returns true if the asset is compatible with the other asset, meaning we want to treat them as interchangeable in certain scenarios
-  /// such as sending or receiving.
   bool isCompatibleWith(Asset other) {
+    // Si es un swap BTC/L-BTC, permitir direcciones BTC y L-BTC
+    if (id.startsWith('swap-btc-lbtc')) {
+      return other.isBTC || other.isLBTC;
+    }
+    
+    // Si es BTC, solo permitir direcciones BTC
+    if (isBTC) {
+      return other.isBTC;
+    }
+    
+    // Para otros casos mantener la lógica existente
     if (isLayerTwo) {
       return other.isLayerTwo;
-    } else if (isBTC) {
-      return other.isLightning || other.isBTC;
     } else if (isAnyUsdt) {
       return other.isAnyUsdt;
     } else {
@@ -183,4 +209,9 @@ extension CompatibleExt on Asset {
   }
 
   bool get hasCompatibleAssets => isLayerTwo || isAnyUsdt;
+
+  bool get isChainSwap {
+    // Ajusta la lógica a lo que defina si tu asset es un chain swap
+    return id == 'chain_swap'; 
+  }
 }

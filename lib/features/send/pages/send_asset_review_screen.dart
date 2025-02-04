@@ -17,6 +17,8 @@ import 'package:aqua/features/swap/swap.dart';
 import 'package:aqua/logger.dart';
 import 'package:aqua/utils/utils.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter/material.dart';
+import 'package:aqua/data/provider/liquid_provider.dart';
 
 final _debouncer = Debouncer(milliseconds: 300);
 
@@ -126,9 +128,65 @@ class SendAssetReviewScreen extends HookConsumerWidget {
     final onTransactionConfirm = useCallback(() async {
       sliderState.value = SliderState.inProgress;
 
+      final isSwap = ref.read(sendAssetProvider)?.id == 'swap-btc-lbtc';
+      
+      if (isSwap) {
+        // Verificar estado del swap
+        final swap = ref.read(boltzChainSwapProvider);
+        if (swap == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Debe configurar el swap primero'),
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+          );
+          sliderState.value = SliderState.initial;
+          return;
+        }
+        
+        // Validar dirección del script
+        if (swap.scriptAddress.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Dirección de swap inválida'),
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+          );
+          sliderState.value = SliderState.initial;
+          return;
+        }
+        
+        // Validar monto
+        if (arguments?.userEnteredAmount == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Monto de swap inválido'),
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+          );
+          sliderState.value = SliderState.initial;
+          return;
+        }
+
+        // Asegurarse de que la dirección de destino sea la del script
+        final sendAssetSetup = ref.read(sendAssetSetupProvider).asData?.value;
+        if (sendAssetSetup != null && swap.scriptAddress != arguments?.input) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('La dirección de destino debe ser la del swap'),
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+          );
+          sliderState.value = SliderState.initial;
+          return;
+        }
+      }
+
       await ref
           .read(sendAssetTransactionProvider.notifier)
-          .createAndSendFinalTransaction(onSuccess: pushToCompleteScreen);
+          .createAndSendFinalTransaction(
+            onSuccess: pushToCompleteScreen,
+          );
     }, []);
 
     // create initial tx (for now only need plain btc and lbtc for estimates)
@@ -231,6 +289,41 @@ class SendAssetReviewScreen extends HookConsumerWidget {
               orElse: () => {},
             ));
 
+    // Restaurar el estado del swap si es necesario
+    useEffect(() {
+      if (arguments?.asset.isChainSwap == true && arguments?.externalServiceTxId != null) {
+        Future.microtask(() async {
+          try {
+            // Obtener los datos necesarios
+            final network = await ref.read(liquidProvider).getNetwork();
+            final electrumUrl = network!.electrumUrl!;
+            final mnemonic = await ref.read(liquidProvider).generateMnemonic12();
+            final mnemonicString = mnemonic!.join(' ');
+
+            // Recrear el swap con los datos guardados
+            final decimalAmount = arguments!.userEnteredAmount!;
+            final amountInt = int.parse(decimalAmount.toString());
+            
+            await ref.read(boltzChainSwapProvider.notifier).prepareAndCreateSwap(
+              mnemonic: mnemonicString,
+              index: 0,
+              btcElectrumUrl: electrumUrl,
+              lbtcElectrumUrl: electrumUrl,
+              boltzUrl: ref.read(boltzEnvConfigProvider).apiUrl,
+              referralId: 'AQUA',
+              amount: amountInt,
+            );
+          } catch (e) {
+            logger.e('[BoltzChainSwap] Error restaurando swap: $e');
+            if (context.mounted) {
+              context.showErrorSnackbar(e.toString());
+            }
+          }
+        });
+      }
+      return null;
+    }, const []);
+
     return PopScope(
       canPop: true,
       onPopInvoked: (_) async {
@@ -287,8 +380,16 @@ class SendAssetReviewScreen extends HookConsumerWidget {
                     ),
                     SizedBox(height: 22.h),
                     //ANCHOR - Fee Cards
+                    // Check if it's a BTC-LBTC swap first
+                    if (asset.id == 'swap-btc-lbtc') ...{
+                      LiquidTransactionFeeSelector(
+                        asset: asset,
+                        transaction: transaction,
+                        isSendAll: isSendAll,
+                      ),
+                    }
                     // Bitcoin
-                    if (asset.isBTC) ...{
+                    else if (asset.isBTC) ...{
                       if (transaction != null) ...{
                         TransactionPrioritySelector(transaction: transaction),
                       },

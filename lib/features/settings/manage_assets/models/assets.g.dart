@@ -53,8 +53,9 @@ _$AssetImpl _$$AssetImplFromJson(Map json) => _$AssetImpl(
       amount: (json['amount'] as num?)?.toInt() ?? 0,
       precision: (json['precision'] as num?)?.toInt() ?? 8,
       isLiquid: json['isLiquid'] as bool? ?? false,
-      isLBTC: json['isLBTC'] as bool? ?? false,
+      isLBTC: json['IsLBTC'] as bool? ?? false,
       isUSDt: json['isUSDt'] as bool? ?? false,
+      isBTC: json['IsBTC'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$$AssetImplToJson(_$AssetImpl instance) {
@@ -77,7 +78,8 @@ Map<String, dynamic> _$$AssetImplToJson(_$AssetImpl instance) {
   val['amount'] = instance.amount;
   val['precision'] = instance.precision;
   val['isLiquid'] = instance.isLiquid;
-  val['isLBTC'] = instance.isLBTC;
+  val['IsLBTC'] = instance.isLBTC;
   val['isUSDt'] = instance.isUSDt;
+  val['IsBTC'] = instance.isBTC;
   return val;
 }

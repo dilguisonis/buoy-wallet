@@ -46,6 +46,11 @@ final boltzSwapSuccessResponseProvider =
 final boltzReverseSwapSuccessResponseProvider =
     StateProvider.autoDispose<BoltzCreateReverseSwapResponse?>((ref) => null);
 
+/////////////////////////////////////////
+// Chain swap providers /////////////////
+final boltzChainSwapSuccessResponseProvider = 
+    StateProvider.autoDispose<BoltzCreateChainSwapResponse?>((ref) => null);
+
 // cache mempooltx from swapstatus update
 // - this is also the point at which the claim tx can be broadcasted
 

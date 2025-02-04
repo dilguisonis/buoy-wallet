@@ -10,3 +10,5 @@ export 'boltz_get_pairs_response.dart';
 export 'boltz_lockup_tx_response.dart';
 export 'boltz_reverse_swap_bip21_response.dart';
 export 'boltz_exceptions.dart';
+export 'boltz_create_chain_swap_request.dart';
+export 'boltz_create_chain_swap_response.dart';

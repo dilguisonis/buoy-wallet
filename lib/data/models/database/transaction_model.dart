@@ -118,6 +118,22 @@ class TransactionDbModel with _$TransactionDbModel {
           isLiquidDeposit ? order.depositAddress : order.settleAddress,
     );
   }
+
+  factory TransactionDbModel.fromV2ChainSwapResponse({
+    required String txhash,
+    required String settleAddress,
+    required String assetId,
+    required ChainSwap swap,
+  }) {
+    return TransactionDbModel(
+      txhash: txhash,
+      assetId: assetId,
+      type: TransactionDbModelType.boltzSwap,
+      serviceOrderId: swap.id,
+      serviceAddress: swap.scriptAddress,
+      receiveAddress: settleAddress,
+    );
+  }
 }
 
 extension TransactionDbModelX on TransactionDbModel {

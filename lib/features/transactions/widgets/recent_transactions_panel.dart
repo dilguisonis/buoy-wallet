@@ -10,7 +10,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 class RecentTransactionsPanel extends HookConsumerWidget {
   const RecentTransactionsPanel({super.key});
   
-  static const int maxTransactions = 5;
+  static const int maxTransactions = 2;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

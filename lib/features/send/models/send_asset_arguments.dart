@@ -24,7 +24,8 @@ class SendAssetArguments with _$SendAssetArguments {
       required String network,
       String? input,
       Decimal? userEnteredAmount,
-      LNURLParseResult? lnurlParseResult}) = _SendAssetArguments;
+      LNURLParseResult? lnurlParseResult,
+      String? externalServiceTxId}) = _SendAssetArguments;
 
   factory SendAssetArguments.btc(Asset asset) => SendAssetArguments._(
       startScreen: null,
@@ -32,7 +33,8 @@ class SendAssetArguments with _$SendAssetArguments {
       network: 'Bitcoin',
       input: null,
       userEnteredAmount: null,
-      lnurlParseResult: null);
+      lnurlParseResult: null,
+      externalServiceTxId: null);
 
   factory SendAssetArguments.lbtc(Asset asset) => SendAssetArguments._(
       startScreen: null,
@@ -40,7 +42,8 @@ class SendAssetArguments with _$SendAssetArguments {
       network: 'Liquid',
       input: null,
       userEnteredAmount: null,
-      lnurlParseResult: null);
+      lnurlParseResult: null,
+      externalServiceTxId: null);
 
   factory SendAssetArguments.lightningBtc(Asset asset) => SendAssetArguments._(
       startScreen: null,
@@ -48,7 +51,8 @@ class SendAssetArguments with _$SendAssetArguments {
       network: 'Lightning',
       input: null,
       userEnteredAmount: null,
-      lnurlParseResult: null);
+      lnurlParseResult: null,
+      externalServiceTxId: null);
 
   factory SendAssetArguments.liquidUsdt(Asset asset) => SendAssetArguments._(
       startScreen: null,
@@ -56,7 +60,8 @@ class SendAssetArguments with _$SendAssetArguments {
       network: 'Liquid',
       input: null,
       userEnteredAmount: null,
-      lnurlParseResult: null);
+      lnurlParseResult: null,
+      externalServiceTxId: null);
 
   factory SendAssetArguments.ethereumUsdt(Asset asset) => SendAssetArguments._(
       startScreen: null,
@@ -64,7 +69,8 @@ class SendAssetArguments with _$SendAssetArguments {
       network: 'Ethereum',
       input: null,
       userEnteredAmount: null,
-      lnurlParseResult: null);
+      lnurlParseResult: null,
+      externalServiceTxId: null);
 
   factory SendAssetArguments.tronUsdt(Asset asset) => SendAssetArguments._(
       startScreen: null,
@@ -72,7 +78,8 @@ class SendAssetArguments with _$SendAssetArguments {
       network: 'Tron',
       input: null,
       userEnteredAmount: null,
-      lnurlParseResult: null);
+      lnurlParseResult: null,
+      externalServiceTxId: null);
 
   factory SendAssetArguments.liquid(Asset asset) => SendAssetArguments._(
       startScreen: null,
@@ -80,11 +87,19 @@ class SendAssetArguments with _$SendAssetArguments {
       network: 'Liquid',
       input: null,
       userEnteredAmount: null,
-      lnurlParseResult: null);
+      lnurlParseResult: null,
+      externalServiceTxId: null);
+
+  factory SendAssetArguments.btcLbtcSwap(Asset asset) => SendAssetArguments._(
+      startScreen: null,
+      asset: asset,
+      network: 'Bitcoin',
+      input: null,
+      userEnteredAmount: null,
+      lnurlParseResult: null,
+      externalServiceTxId: null);
 
   factory SendAssetArguments.fromAsset(Asset asset) {
-    // have to do these as ifs because we cannot handle it in the case
-    // statement below.
     if (asset.isLBTC) {
       return SendAssetArguments.lbtc(asset);
     }
@@ -96,7 +111,8 @@ class SendAssetArguments with _$SendAssetArguments {
         return SendAssetArguments.btc(asset);
       case 'lightning':
         return SendAssetArguments.lightningBtc(asset);
-
+      case 'swap-btc-lbtc':
+        return SendAssetArguments.btcLbtcSwap(asset);
       case 'eth-usdt':
         return SendAssetArguments.ethereumUsdt(asset);
       case 'trx-usdt':

@@ -6,6 +6,7 @@ import 'package:aqua/features/shared/shared.dart';
 import 'package:aqua/utils/extensions/context_ext.dart';
 import 'package:aqua/utils/extensions/date_time_ext.dart';
 import 'package:boltz_dart/boltz_dart.dart';
+import 'package:flutter/material.dart';
 
 class BoltzSwapDetailScreen extends HookConsumerWidget {
   static const routeName = '/boltzSwapDetailScreen';
@@ -211,4 +212,25 @@ class _RefundButton extends StatelessWidget {
       ),
     );
   }
+}
+
+Future<bool?> showBitcoinSwapChoiceDialog(BuildContext context) async {
+  return showDialog<bool>(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) => AlertDialog(
+      title: const Text('Send Bitcoin'),
+      content: const Text('Would you like to perform a swap or send a normal transaction?'),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
+          child: const Text('Normal Send'),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(context, true),
+          child: const Text('Swap'),
+        ),
+      ],
+    ),
+  );
 }

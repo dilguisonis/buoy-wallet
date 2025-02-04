@@ -45,7 +45,12 @@ class AddressParser {
       {required Asset asset,
       required String address,
       bool accountForCompatibleAssets = false}) async {
-    // check with compatible assets
+    // Primero validar BTC si el asset es BTC
+    if (asset.isBTC) {
+      return await ref.read(bitcoinProvider).isValidAddress(address);
+    }
+    
+    // Luego validar assets compatibles si está habilitado
     if (accountForCompatibleAssets && asset.hasCompatibleAssets) {
       if (asset.isLayerTwo) {
         final valid = isLightning(address) ||
@@ -56,10 +61,8 @@ class AddressParser {
       }
     }
 
-    // check only for specific asset
-    if (asset.isBTC) {
-      return await ref.read(bitcoinProvider).isValidAddress(address);
-    } else if (asset.isLightning) {
+    // Validar otros tipos de assets específicos
+    if (asset.isLightning) {
       return isLightning(address);
     } else if (asset.isEth) {
       return isEthAddress(address);
@@ -67,21 +70,28 @@ class AddressParser {
       return isTronAddress(address);
     }
 
-    // If none of the specific asset checks match, try all liquid assets
+    // Si no es ninguno de los anteriores, intentar validar como Liquid
     return await ref.read(liquidProvider).isValidAddress(address);
   }
 
   /// Attempt to parse an Asset from an input
   Future<Asset?> parseAsset({required String address}) async {
+    // Primero intentar validar como BTC
     if (await ref.read(bitcoinProvider).isValidAddress(address)) {
       return Asset.btc();
-    } else if (isLightning(address)) {
+    } 
+    
+    // Luego validar otros tipos específicos
+    if (isLightning(address)) {
       return Asset.lightning();
-    } else if (isEthAddress(address) == true) {
+    } else if (isEthAddress(address)) {
       return Asset.usdtEth();
-    } else if (isTronAddress(address) == true) {
+    } else if (isTronAddress(address)) {
       return Asset.usdtTrx();
-    } else if (await ref.read(liquidProvider).isValidAddress(address)) {
+    } 
+    
+    // Por último intentar validar como Liquid
+    if (await ref.read(liquidProvider).isValidAddress(address)) {
       final uri = Uri.parse(address);
       if (uri.queryParameters['assetid'] != null) {
         final asset = ref.read(manageAssetsProvider).curatedAssets.firstWhere(
@@ -172,6 +182,9 @@ class AddressParser {
   /// Or if user is on USDt-trx flow, but scans a plain Liquid address, switch to USDt-Liquid
   Asset? _switchedAsset(Asset? originalAsset, Asset? parsedAsset,
       bool accountForCompatibleAssets) {
+    if (originalAsset?.id == 'swap-btc-lbtc' && parsedAsset?.isBTC == true) {
+      return originalAsset; // Mantener el asset de swap
+    }
     if (originalAsset == null) {
       return parsedAsset;
     } else if (parsedAsset != null) {

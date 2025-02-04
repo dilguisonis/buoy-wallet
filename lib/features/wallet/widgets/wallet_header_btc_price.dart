@@ -13,7 +13,7 @@ import 'package:aqua/features/wallet/widgets/widgets.dart';
 import 'package:aqua/screens/qrscanner/qr_scanner_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
-//REVERTED
+
 // Create a provider to manage the visibility state
 final balanceVisibilityProvider = StateProvider<bool>((ref) => true);
 
@@ -129,32 +129,21 @@ class WalletHeaderBtcPrice extends HookConsumerWidget {
       data: (assetsList) {
         double totalUsdValue = 0;
         
-        print('=== Lista completa de Assets ===');
         for (final asset in assetsList) {
           final usdAmount = ref.watch(conversionProvider((asset, asset.amount)));
-          print('Asset: ${asset.ticker} - Amount: ${asset.amount} - USD Value: $usdAmount');
-          print('Asset Details:');
-          print('  - ID: ${asset.id}');
-          print('  - Name: ${asset.name}');
-          print('  - isBTC: ${asset.isBTC}');
-          print('  - Balance: ${asset.amount}');
           
           // Manejo especial para USDt
           if (asset.ticker == 'USDt') {
             // USDt está en satoshis (1e8), necesitamos dividir por 100000000
             final usdtValue = asset.amount / 100000000;
             totalUsdValue += usdtValue;
-            print('  - Calculated USDt value: $usdtValue USD');
           } else {
             final value = _parseUsdAmount(usdAmount);
             if (value != null) {
               totalUsdValue += value;
             }
           }
-          print('------------------------');
         }
-        print('Total USD Value: $totalUsdValue');
-        print('===========================');
         
         return Column(
           mainAxisSize: MainAxisSize.min,

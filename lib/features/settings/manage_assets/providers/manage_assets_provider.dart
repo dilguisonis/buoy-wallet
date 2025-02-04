@@ -139,8 +139,12 @@ class ManageAssetsProvider extends ChangeNotifier {
 
   List<Asset> get shitcoinAssets => [Asset.usdtEth(), Asset.usdtTrx()];
 
-  List<Asset> get mainTransactableAssets =>
-      [btcAsset, Asset.lightning(), ...allAssets];
+  List<Asset> get mainTransactableAssets => [
+    btcAsset,
+    Asset.lightning(),
+    Asset.sendBTCwithLBTC(),
+    ...allAssets
+  ];
 
   /// Convenience getter for list of curated assets
   List<Asset> get curatedAssets {
@@ -151,10 +155,11 @@ class ManageAssetsProvider extends ChangeNotifier {
       },
       Asset.lightning(),
       lbtcAsset,
+      Asset.sendBTCwithLBTC(),
       ...userAssets.where((asset) =>
           asset != liquidUsdtAsset &&
-          asset !=
-              lbtcAsset), // filter out usdt and liquid since they are already added
+          asset != lbtcAsset &&
+          asset.id != 'btc'), // Excluir BTC ya que se agregó al principio
       if (env == Env.testnet) Asset.liquidTest()
     ];
   }
@@ -183,4 +188,42 @@ class ManageAssetsProvider extends ChangeNotifier {
 
   // Convenience getter to check whether or not USDt is enabled
   bool get isUsdtEnabled => userAssets.any((asset) => asset.isUSDt);
+
+  /// Determina si un asset debe ser tratado como LBTC para UI y validaciones
+  bool shouldTreatAsLBTC(Asset asset) {
+    return isLBTC(asset) || 
+           (asset.isSwapBtcLbtc && asset.isLiquid);
+  }
+
+  /// Obtiene el ticker correcto para mostrar en UI
+  String getDisplayTicker(Asset asset) {
+    if (asset.isSwapBtcLbtc) {
+      return lbtcAsset.ticker;
+    }
+    return asset.ticker;
+  }
+
+  /// Obtiene la precisión correcta para el asset
+  int getAssetPrecision(Asset asset) {
+    if (asset.isSwapBtcLbtc) {
+      return lbtcAsset.precision;
+    }
+    return asset.precision;
+  }
+
+  /// Determina si un asset debe mostrar conversión a fiat
+  bool shouldShowFiatConversion(Asset asset) {
+    if (asset.isSwapBtcLbtc) {
+      return lbtcAsset.hasFiatRate;
+    }
+    return asset.hasFiatRate;
+  }
+
+  /// Obtiene el asset base para operaciones (útil para swaps)
+  Asset getBaseAsset(Asset asset) {
+    if (asset.isSwapBtcLbtc) {
+      return lbtcAsset;
+    }
+    return asset;
+  }
 }

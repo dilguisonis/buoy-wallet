@@ -18,11 +18,17 @@ class InternalSendMenu extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final assets = ref.watch(assetsProvider).asData?.value ?? [];
     final btcAsset = useMemoized(
-      () => assets.firstWhere((a) => a.isBTC),
+      () => assets.firstWhere(
+        (a) => a.isBTC,
+        orElse: () => Asset.btc(),
+      ),
       [assets],
     );
     final lbtcAsset = useMemoized(
-      () => assets.firstWhere((a) => a.isLBTC),
+      () => assets.firstWhere(
+        (a) => a.isLBTC,
+        orElse: () => ref.read(manageAssetsProvider).lbtcAsset,
+      ),
       [assets],
     );
     final usdtAsset = useMemoized(

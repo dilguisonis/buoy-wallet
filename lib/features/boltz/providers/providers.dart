@@ -7,3 +7,4 @@ export 'boltz_status_check_provider.dart';
 export 'boltz_to_boltz_tx_provider.dart';
 export 'boltz_websocket_provider.dart';
 export 'legacy_boltz_status_check_provider.dart';
+export 'boltz_chain_swap_provider.dart';

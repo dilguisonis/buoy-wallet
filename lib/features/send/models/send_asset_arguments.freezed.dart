@@ -22,6 +22,7 @@ mixin _$SendAssetArguments {
   String? get input => throw _privateConstructorUsedError;
   Decimal? get userEnteredAmount => throw _privateConstructorUsedError;
   LNURLParseResult? get lnurlParseResult => throw _privateConstructorUsedError;
+  String? get externalServiceTxId => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $SendAssetArgumentsCopyWith<SendAssetArguments> get copyWith =>
@@ -40,7 +41,8 @@ abstract class $SendAssetArgumentsCopyWith<$Res> {
       String network,
       String? input,
       Decimal? userEnteredAmount,
-      LNURLParseResult? lnurlParseResult});
+      LNURLParseResult? lnurlParseResult,
+      String? externalServiceTxId});
 
   $AssetCopyWith<$Res> get asset;
 }
@@ -64,6 +66,7 @@ class _$SendAssetArgumentsCopyWithImpl<$Res, $Val extends SendAssetArguments>
     Object? input = freezed,
     Object? userEnteredAmount = freezed,
     Object? lnurlParseResult = freezed,
+    Object? externalServiceTxId = freezed,
   }) {
     return _then(_value.copyWith(
       startScreen: freezed == startScreen
@@ -90,6 +93,10 @@ class _$SendAssetArgumentsCopyWithImpl<$Res, $Val extends SendAssetArguments>
           ? _value.lnurlParseResult
           : lnurlParseResult // ignore: cast_nullable_to_non_nullable
               as LNURLParseResult?,
+      externalServiceTxId: freezed == externalServiceTxId
+          ? _value.externalServiceTxId
+          : externalServiceTxId // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 
@@ -116,7 +123,8 @@ abstract class _$$SendAssetArgumentsImplCopyWith<$Res>
       String network,
       String? input,
       Decimal? userEnteredAmount,
-      LNURLParseResult? lnurlParseResult});
+      LNURLParseResult? lnurlParseResult,
+      String? externalServiceTxId});
 
   @override
   $AssetCopyWith<$Res> get asset;
@@ -139,6 +147,7 @@ class __$$SendAssetArgumentsImplCopyWithImpl<$Res>
     Object? input = freezed,
     Object? userEnteredAmount = freezed,
     Object? lnurlParseResult = freezed,
+    Object? externalServiceTxId = freezed,
   }) {
     return _then(_$SendAssetArgumentsImpl(
       startScreen: freezed == startScreen
@@ -165,6 +174,10 @@ class __$$SendAssetArgumentsImplCopyWithImpl<$Res>
           ? _value.lnurlParseResult
           : lnurlParseResult // ignore: cast_nullable_to_non_nullable
               as LNURLParseResult?,
+      externalServiceTxId: freezed == externalServiceTxId
+          ? _value.externalServiceTxId
+          : externalServiceTxId // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -178,7 +191,8 @@ class _$SendAssetArgumentsImpl implements _SendAssetArguments {
       required this.network,
       this.input,
       this.userEnteredAmount,
-      this.lnurlParseResult});
+      this.lnurlParseResult,
+      this.externalServiceTxId});
 
   @override
   final SendAssetStartScreen? startScreen;
@@ -192,10 +206,12 @@ class _$SendAssetArgumentsImpl implements _SendAssetArguments {
   final Decimal? userEnteredAmount;
   @override
   final LNURLParseResult? lnurlParseResult;
+  @override
+  final String? externalServiceTxId;
 
   @override
   String toString() {
-    return 'SendAssetArguments._(startScreen: $startScreen, asset: $asset, network: $network, input: $input, userEnteredAmount: $userEnteredAmount, lnurlParseResult: $lnurlParseResult)';
+    return 'SendAssetArguments._(startScreen: $startScreen, asset: $asset, network: $network, input: $input, userEnteredAmount: $userEnteredAmount, lnurlParseResult: $lnurlParseResult, externalServiceTxId: $externalServiceTxId)';
   }
 
   @override
@@ -211,12 +227,14 @@ class _$SendAssetArgumentsImpl implements _SendAssetArguments {
             (identical(other.userEnteredAmount, userEnteredAmount) ||
                 other.userEnteredAmount == userEnteredAmount) &&
             (identical(other.lnurlParseResult, lnurlParseResult) ||
-                other.lnurlParseResult == lnurlParseResult));
+                other.lnurlParseResult == lnurlParseResult) &&
+            (identical(other.externalServiceTxId, externalServiceTxId) ||
+                other.externalServiceTxId == externalServiceTxId));
   }
 
   @override
   int get hashCode => Object.hash(runtimeType, startScreen, asset, network,
-      input, userEnteredAmount, lnurlParseResult);
+      input, userEnteredAmount, lnurlParseResult, externalServiceTxId);
 
   @JsonKey(ignore: true)
   @override
@@ -233,7 +251,8 @@ abstract class _SendAssetArguments implements SendAssetArguments {
       required final String network,
       final String? input,
       final Decimal? userEnteredAmount,
-      final LNURLParseResult? lnurlParseResult}) = _$SendAssetArgumentsImpl;
+      final LNURLParseResult? lnurlParseResult,
+      final String? externalServiceTxId}) = _$SendAssetArgumentsImpl;
 
   @override
   SendAssetStartScreen? get startScreen;
@@ -247,6 +266,8 @@ abstract class _SendAssetArguments implements SendAssetArguments {
   Decimal? get userEnteredAmount;
   @override
   LNURLParseResult? get lnurlParseResult;
+  @override
+  String? get externalServiceTxId;
   @override
   @JsonKey(ignore: true)
   _$$SendAssetArgumentsImplCopyWith<_$SendAssetArgumentsImpl> get copyWith =>

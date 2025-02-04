@@ -141,6 +141,26 @@ class BoltzSwapDbModel with _$BoltzSwapDbModel {
       lastKnownStatus: data.swapStatus,
     );
   }
+
+  factory BoltzSwapDbModel.fromV2ChainSwapResponse(ChainSwap response) =>
+      BoltzSwapDbModel(
+        boltzId: response.id,
+        kind: SwapType.chain,
+        network: Chain.liquid,
+        invoice: '',
+        outAmount: response.outAmount.toInt(),
+        blindingKey: response.blindingKey,
+        electrumUrl: response.btcElectrumUrl,
+        boltzUrl: response.boltzUrl,
+        hashlock: response.btcScriptStr.hashlock,
+        receiverPubkey: response.btcScriptStr.receiverPubkey,
+        senderPubkey: response.btcScriptStr.senderPubkey,
+        fundingAddrs: response.btcScriptStr.fundingAddrs,
+        locktime: response.btcScriptStr.locktime,
+        referralId: response.referralId,
+        scriptAddress: response.scriptAddress,
+        createdAt: DateTime.now(),
+      );
 }
 
 @freezed

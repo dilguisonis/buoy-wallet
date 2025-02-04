@@ -76,8 +76,10 @@ dependencies:
   webview_flutter: ^4.2.2
   flare_flutter: ^3.0.2
   video_player: ^2.8.1
+  rive: ^0.12.4
 
 dev_dependencies:
+  lakos: ^2.0.3
   build_runner: ^2.4.6
   ffigen: ^11.0.0
   flutter_gen_runner: ^5.8.0

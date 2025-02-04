@@ -345,8 +345,11 @@ mixin _$Asset {
   int get amount => throw _privateConstructorUsedError;
   int get precision => throw _privateConstructorUsedError;
   bool get isLiquid => throw _privateConstructorUsedError;
+  @JsonKey(name: 'IsLBTC')
   bool get isLBTC => throw _privateConstructorUsedError;
   bool get isUSDt => throw _privateConstructorUsedError;
+  @JsonKey(name: 'IsBTC')
+  bool get isBTC => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -369,8 +372,9 @@ abstract class $AssetCopyWith<$Res> {
       int amount,
       int precision,
       bool isLiquid,
-      bool isLBTC,
-      bool isUSDt});
+      @JsonKey(name: 'IsLBTC') bool isLBTC,
+      bool isUSDt,
+      @JsonKey(name: 'IsBTC') bool isBTC});
 }
 
 /// @nodoc
@@ -398,6 +402,7 @@ class _$AssetCopyWithImpl<$Res, $Val extends Asset>
     Object? isLiquid = null,
     Object? isLBTC = null,
     Object? isUSDt = null,
+    Object? isBTC = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -448,6 +453,10 @@ class _$AssetCopyWithImpl<$Res, $Val extends Asset>
           ? _value.isUSDt
           : isUSDt // ignore: cast_nullable_to_non_nullable
               as bool,
+      isBTC: null == isBTC
+          ? _value.isBTC
+          : isBTC // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -470,8 +479,9 @@ abstract class _$$AssetImplCopyWith<$Res> implements $AssetCopyWith<$Res> {
       int amount,
       int precision,
       bool isLiquid,
-      bool isLBTC,
-      bool isUSDt});
+      @JsonKey(name: 'IsLBTC') bool isLBTC,
+      bool isUSDt,
+      @JsonKey(name: 'IsBTC') bool isBTC});
 }
 
 /// @nodoc
@@ -497,6 +507,7 @@ class __$$AssetImplCopyWithImpl<$Res>
     Object? isLiquid = null,
     Object? isLBTC = null,
     Object? isUSDt = null,
+    Object? isBTC = null,
   }) {
     return _then(_$AssetImpl(
       id: null == id
@@ -547,6 +558,10 @@ class __$$AssetImplCopyWithImpl<$Res>
           ? _value.isUSDt
           : isUSDt // ignore: cast_nullable_to_non_nullable
               as bool,
+      isBTC: null == isBTC
+          ? _value.isBTC
+          : isBTC // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -565,8 +580,9 @@ class _$AssetImpl implements _Asset {
       this.amount = 0,
       this.precision = 8,
       this.isLiquid = false,
-      this.isLBTC = false,
-      this.isUSDt = false});
+      @JsonKey(name: 'IsLBTC') this.isLBTC = false,
+      this.isUSDt = false,
+      @JsonKey(name: 'IsBTC') this.isBTC = false});
 
   factory _$AssetImpl.fromJson(Map<String, dynamic> json) =>
       _$$AssetImplFromJson(json);
@@ -601,15 +617,18 @@ class _$AssetImpl implements _Asset {
   @JsonKey()
   final bool isLiquid;
   @override
-  @JsonKey()
+  @JsonKey(name: 'IsLBTC')
   final bool isLBTC;
   @override
   @JsonKey()
   final bool isUSDt;
+  @override
+  @JsonKey(name: 'IsBTC')
+  final bool isBTC;
 
   @override
   String toString() {
-    return 'Asset(id: $id, name: $name, ticker: $ticker, logoUrl: $logoUrl, isDefaultAsset: $isDefaultAsset, isRemovable: $isRemovable, domain: $domain, amount: $amount, precision: $precision, isLiquid: $isLiquid, isLBTC: $isLBTC, isUSDt: $isUSDt)';
+    return 'Asset(id: $id, name: $name, ticker: $ticker, logoUrl: $logoUrl, isDefaultAsset: $isDefaultAsset, isRemovable: $isRemovable, domain: $domain, amount: $amount, precision: $precision, isLiquid: $isLiquid, isLBTC: $isLBTC, isUSDt: $isUSDt, isBTC: $isBTC)';
   }
 
   @override
@@ -632,7 +651,8 @@ class _$AssetImpl implements _Asset {
             (identical(other.isLiquid, isLiquid) ||
                 other.isLiquid == isLiquid) &&
             (identical(other.isLBTC, isLBTC) || other.isLBTC == isLBTC) &&
-            (identical(other.isUSDt, isUSDt) || other.isUSDt == isUSDt));
+            (identical(other.isUSDt, isUSDt) || other.isUSDt == isUSDt) &&
+            (identical(other.isBTC, isBTC) || other.isBTC == isBTC));
   }
 
   @JsonKey(ignore: true)
@@ -650,7 +670,8 @@ class _$AssetImpl implements _Asset {
       precision,
       isLiquid,
       isLBTC,
-      isUSDt);
+      isUSDt,
+      isBTC);
 
   @JsonKey(ignore: true)
   @override
@@ -678,8 +699,9 @@ abstract class _Asset implements Asset {
       final int amount,
       final int precision,
       final bool isLiquid,
-      final bool isLBTC,
-      final bool isUSDt}) = _$AssetImpl;
+      @JsonKey(name: 'IsLBTC') final bool isLBTC,
+      final bool isUSDt,
+      @JsonKey(name: 'IsBTC') final bool isBTC}) = _$AssetImpl;
 
   factory _Asset.fromJson(Map<String, dynamic> json) = _$AssetImpl.fromJson;
 
@@ -710,9 +732,13 @@ abstract class _Asset implements Asset {
   @override
   bool get isLiquid;
   @override
+  @JsonKey(name: 'IsLBTC')
   bool get isLBTC;
   @override
   bool get isUSDt;
+  @override
+  @JsonKey(name: 'IsBTC')
+  bool get isBTC;
   @override
   @JsonKey(ignore: true)
   _$$AssetImplCopyWith<_$AssetImpl> get copyWith =>

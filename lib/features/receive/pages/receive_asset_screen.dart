@@ -91,20 +91,71 @@ class ReceiveAssetScreen extends HookConsumerWidget {
     }, [amountAsDecimal]);
 
     if (boltzOrder != null) {
-      // listen for boltz claim to show lightning success screen
+      // Monitorear estado del swap
       ref.listen(boltzSwapStatusProvider(boltzOrder.id), (_, event) async {
-        final status = event.value?.status;
-        logger.d('[Receive] Boltz Swap Status: $status');
-        if (status?.isSuccess == true) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            Navigator.of(context).pushReplacementNamed(
-              LightningTransactionSuccessScreen.routeName,
-              arguments: LightningSuccessArguments(
-                  satoshiAmount: boltzOrder.outAmount,
-                  type: LightningSuccessType.receive,
-                  orderId: boltzOrder.id),
-            );
-          });
+        try {
+          final status = event.value?.status;
+          logger.d('''
+          ============================================
+          [Receive] Estado del Boltz Swap
+          ============================================
+          - ID: ${boltzOrder.id}
+          - Estado: $status
+          - Amount BTC a recibir: ${boltzOrder.outAmount}
+          ''');
+
+          if (status?.isSuccess == true) {
+            logger.d('''
+            ============================================
+            [Receive] ¡Swap exitoso!
+            ============================================
+            - ID: ${boltzOrder.id}
+            - Amount BTC recibido: ${boltzOrder.outAmount}
+            ''');
+
+            // Verificar que el swap se guardó correctamente
+            final swapData = await ref
+                .read(boltzStorageProvider.notifier)
+                .getSwapById(boltzOrder.id);
+            
+            if (swapData == null) {
+              logger.e('''
+              ============================================
+              [Receive] Error: Datos del swap no encontrados
+              ============================================
+              - ID: ${boltzOrder.id}
+              ''');
+              throw Exception('Datos del swap no encontrados en la base de datos');
+            }
+
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              Navigator.of(context).pushReplacementNamed(
+                LightningTransactionSuccessScreen.routeName,
+                arguments: LightningSuccessArguments(
+                    satoshiAmount: boltzOrder.outAmount,
+                    type: LightningSuccessType.receive,
+                    orderId: boltzOrder.id),
+              );
+            });
+          } else if (status?.needsRefund == true) {
+            logger.e('''
+            ============================================
+            [Receive] Swap necesita refund
+            ============================================
+            - ID: ${boltzOrder.id}
+            - Estado: $status
+            ''');
+            // Aquí podrías mostrar un diálogo al usuario indicando que debe hacer refund
+          }
+        } catch (e) {
+          logger.e('''
+          ============================================
+          [Receive] Error monitoreando swap
+          ============================================
+          - ID: ${boltzOrder.id}
+          - Error: ${e.toString()}
+          ''');
+          // Manejar el error apropiadamente (mostrar mensaje al usuario, etc)
         }
       });
 

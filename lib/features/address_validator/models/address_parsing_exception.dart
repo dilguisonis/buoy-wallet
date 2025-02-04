@@ -26,6 +26,10 @@ class AddressParsingException implements ExceptionLocalized {
       case AddressParsingExceptionType.nonMatchingAmountInInvoice:
         return context.loc.sendAssetAmountScreenNonMatchingAmountError;
       case AddressParsingExceptionType.nonMatchingAssetId:
+        print('[DEBUG] AddressParsingException - nonMatchingAssetId');
+        print('[DEBUG] Context: ${context.toString()}');
+        print('[DEBUG] Custom Message: $customMessage');
+        print('[DEBUG] Localized Error: ${context.loc.sendAssetAmountScreenNonMatchingAssetIdError}');
         return context.loc.sendAssetAmountScreenNonMatchingAssetIdError;
       case AddressParsingExceptionType.assetNotInManagedAssets:
         return context.loc.sendAssetAmountScreenAssetNotInManagedAssetsError;

@@ -32,7 +32,7 @@ class SendAssetSetupService {
           .prepareSubmarineSwap();
     } else if (asset.isSideshift) {
       return await setupSideshift();
-    } else if (asset.isBTC) {
+    } else if (asset.isBTC || asset.id == 'swap-btc-lbtc') {
       return await setupBtc();
     } else {
       // no setup needed for other assets
@@ -41,17 +41,27 @@ class SendAssetSetupService {
   }
 
   Future<bool> setupBtc() async {
-    final result =
-        ref.watch(fetchedFeeRatesPerVByteProvider(NetworkType.bitcoin));
-    final completer = Completer<bool>();
+    final asset = ref.watch(sendAssetProvider);
+    
+    if (asset.id == 'swap-btc-lbtc') {
+      // Lógica específica para el swap BTC/L-BTC
+      return await ref
+          .read(boltzChainSwapProvider.notifier)
+          .prepareChainSwap();
+    } else {
+      // Lógica normal para BTC
+      final result =
+          ref.watch(fetchedFeeRatesPerVByteProvider(NetworkType.bitcoin));
+      final completer = Completer<bool>();
 
-    result.when(
-      data: (_) => completer.complete(true),
-      error: (error, _) => completer.completeError(error),
-      loading: () {}, // don't return, wait for data or error
-    );
+      result.when(
+        data: (_) => completer.complete(true),
+        error: (error, _) => completer.completeError(error),
+        loading: () {}, // don't return, wait for data or error
+      );
 
-    return completer.future;
+      return completer.future;
+    }
   }
 
   Future<bool> setupLnurlp() async {

@@ -55,6 +55,66 @@ class SendAssetTransactionProvider
       if (lbtcBalance == 0) return Future.value(null);
     }
 
+    if (asset.id == 'swap-btc-lbtc') {
+      // Obtener configuración de red
+      final network = await ref.read(liquidProvider).getNetwork();
+      if (network == null || network.electrumUrl == null) {
+        throw Exception('No se pudo obtener la configuración de red');
+      }
+
+      // Generar mnemonic
+      final mnemonic = await ref.read(liquidProvider).generateMnemonic12();
+      if (mnemonic == null) {
+        throw Exception('Error generando mnemonic');
+      }
+
+      // Obtener el monto directamente en satoshis de LBTC
+      final amount = ref.read(userEnteredAmountProvider);
+      if (amount == null || amount == Decimal.zero) {
+        throw Exception('Monto inválido');
+      }
+      
+      // Convertir el monto a satoshis
+      final amountInSats = ref.read(enteredAmountWithPrecisionProvider(amount));
+      
+      logger.d('''
+      ============================================
+      [BoltzChainSwap] Monto del swap
+      ============================================
+      - Monto LBTC: $amount
+      - Monto en sats: $amountInSats
+      ''');
+
+      // Verificar monto mínimo
+      if (amountInSats < 25000) {
+        throw Exception('El monto mínimo es 25000 satoshis');
+      }
+
+      final swapId = await ref.read(boltzChainSwapProvider.notifier).prepareAndCreateSwap(
+        mnemonic: mnemonic.join(' '),
+        index: 0,
+        btcElectrumUrl: network.electrumUrl!,
+        lbtcElectrumUrl: network.electrumUrl!,
+        boltzUrl: ref.read(boltzEnvConfigProvider).apiUrl,
+        amount: amountInSats,
+      );
+
+      logger.d('''
+      ============================================
+      [BoltzChainSwap] Swap creado exitosamente
+      ============================================
+      - Swap ID: $swapId
+      - Estado: ${ref.read(boltzChainSwapProvider)}
+      ''');
+
+      // Crear la transacción
+      return await ref
+          .read(boltzChainSwapProvider.notifier)
+          .createChainSwapTransaction(
+            isLowball: isLowball,
+          );
+    }
+
     logger.d("[Send] send review - create transaction");
     return createGdkTransaction(isLowball: isLowball);
   }
@@ -68,9 +128,45 @@ class SendAssetTransactionProvider
   }) async {
     try {
       asset = asset ?? ref.read(sendAssetProvider);
-      if (asset == null) {
-        logger.e('[Send] asset is null');
-        throw Exception('Asset is null');
+      if (asset == null) throw Exception('Asset is null');
+      
+      // Override para swaps
+      if (asset?.id == 'swap-btc-lbtc') {
+        // Verificar existencia de swap
+        final swap = ref.read(boltzChainSwapProvider);
+        if (swap == null) {
+          logger.e('[Swap] No se encontró swap activo');
+          throw Exception('Configurar swap primero');
+        }
+        
+        // Validar dirección del script
+        if (swap.scriptAddress.isEmpty) {
+          logger.e('[Swap] Dirección de script vacía en swap ID: ${swap.id}');
+          throw Exception('Dirección de swap inválida');
+        }
+        
+        // Forzar parámetros correctos
+        asset = ref.read(manageAssetsProvider).lbtcAsset;
+        address = swap.scriptAddress;
+        logger.d('[Swap] Configurando transacción para swap ${swap.id}');
+      }
+
+      final finalAddress = address ?? ref.read(sendAddressProvider);
+      if (finalAddress == null || finalAddress.isEmpty) {
+        throw AddressParsingException(AddressParsingExceptionType.emptyAddress);
+      }
+      
+      // Validación adicional para swaps
+      if (asset?.id?.startsWith('swap-') == true) {
+        final validBtcPrefix = finalAddress.startsWith('bc1') || finalAddress.startsWith('tb1');
+        final validLiquidPrefix = finalAddress.startsWith('lq') || 
+                                 finalAddress.startsWith('VJ') || 
+                                 finalAddress.startsWith('ert');
+          
+        if (!validBtcPrefix && !validLiquidPrefix) {
+          logger.e('[Swap] Dirección inválida: $finalAddress');
+          throw Exception('Dirección Bitcoin o Liquid requerida para swap');
+        }
       }
 
       final userEnteredAmount = ref.read(userEnteredAmountProvider);
@@ -81,10 +177,12 @@ class SendAssetTransactionProvider
       amountWithPrecision = amountWithPrecision ??
           ref.read(enteredAmountWithPrecisionProvider(userEnteredAmount!));
 
-      address = address ?? ref.read(sendAddressProvider);
-      if (address == null) {
-        throw AddressParsingException(AddressParsingExceptionType.emptyAddress);
-      }
+      final addressee = GdkAddressee(
+        address: finalAddress,
+        satoshi: amountWithPrecision,
+        assetId: asset.id != 'btc' ? asset.id : null,
+        isGreedy: ref.read(useAllFundsProvider),
+      );
 
       final customFeeInput = ref.read(customFeeInputProvider);
 
@@ -98,25 +196,18 @@ class SendAssetTransactionProvider
 
       final feeRatePerKb =
           feeRatePerVb != null ? (feeRatePerVb * 1000).toInt() : null;
-      final useAllFunds = ref.read(useAllFundsProvider);
 
-      final networkProvider =
-          ref.read(asset.isBTC ? bitcoinProvider : liquidProvider);
+      final networkProvider = asset.id == 'swap-btc-lbtc'
+          ? ref.read(liquidProvider)
+          : (asset.isBTC ? ref.read(bitcoinProvider) : ref.read(liquidProvider));
 
-      final addressee = GdkAddressee(
-          address: address,
-          satoshi: amountWithPrecision,
-          assetId: asset.id != 'btc' ? asset.id : null,
-          isGreedy: useAllFunds);
-
-      final filteredUtxos = await ref.read(liquidProvider).getUnspentOutputs();
-      final notes = ref.read(noteProvider);
       final transaction = GdkNewTransaction(
-          addressees: [addressee],
-          feeRate: feeRatePerKb ?? await networkProvider.getDefaultFees(),
-          utxoStrategy: GdkUtxoStrategyEnum.defaultStrategy,
-          memo: notes,
-          utxos: filteredUtxos?.unsentOutputs);
+        addressees: [addressee], 
+        feeRate: feeRatePerKb,
+        utxoStrategy: GdkUtxoStrategyEnum.defaultStrategy,
+        memo: ref.read(noteProvider),
+        utxos: (await ref.read(liquidProvider).getUnspentOutputs())?.unsentOutputs,
+      );
 
       logger.d('[Send] provider tx: $transaction');
 
@@ -255,6 +346,10 @@ class SendAssetTransactionProvider
         },
       );
 
+      if (signedRawTx == null) {
+        throw Exception('Failed to sign transaction - signed raw transaction is null');
+      }
+
       if (ref.read(featureFlagsProvider).fakeBroadcastsEnabled) {
         onSuccess('12345', DateTime.now().microsecondsSinceEpoch, network);
         return;
@@ -265,7 +360,6 @@ class SendAssetTransactionProvider
       final createdAt = DateTime.now();
 
       // If boltz, mark as broadcasted
-      // - this isn't a boltz status, but our own added one. see comment on status for why this is necessary
       if (asset.isLightning) {
         await ref
             .read(boltzSubmarineSwapProvider.notifier)
@@ -306,10 +400,8 @@ class SendAssetTransactionProvider
 
       onSuccess(txId, createdAt.microsecondsSinceEpoch, network);
     } on AquaTxBroadcastException {
-      // Return exception directly so we can show a retry dialog and let user manually retry
       state = AsyncValue.error(AquaTxBroadcastException(), StackTrace.current);
     } on MempoolConflictTxBroadcastException {
-      // Return exception directly so we can show a retry dialog
       state = AsyncValue.error(
           MempoolConflictTxBroadcastException(), StackTrace.current);
     } catch (e, stackTrace) {
@@ -349,24 +441,25 @@ class SendAssetTransactionProvider
     SendBroadcastServiceType broadcastType = SendBroadcastServiceType.aqua,
     bool isLowball = true,
   }) async {
+    if (rawTx.isEmpty) {
+      throw Exception('Transaction hex cannot be empty');
+    }
+
     String result;
     switch (broadcastType) {
       case SendBroadcastServiceType.boltz:
-        // REVIEW: Boltz Dart has swap.broadcastTx but it expects a pset
-        // Using old method to broadcast transaction
         final response = await ref
             .read(legacyBoltzProvider)
             .broadcastTransaction(currency: "L-BTC", transactionHex: rawTx);
         result = response.transactionId;
+        break;
       default:
         result = await ref
             .read(electrsProvider)
             .broadcast(rawTx, network, isLowball: isLowball);
     }
 
-    txHash = result;
-    await _success(txHash);
-
+    await _success(result);
     return result;
   }
 

@@ -12,9 +12,11 @@ import 'package:aqua/features/send/providers/providers.dart';
 import 'package:aqua/features/send/widgets/widgets.dart';
 import 'package:aqua/features/settings/manage_assets/models/assets.dart';
 import 'package:aqua/features/shared/shared.dart';
+import 'package:aqua/features/shared/providers/assets_provider.dart';
 import 'package:aqua/features/sideshift/sideshift.dart';
 import 'package:aqua/logger.dart';
 import 'package:decimal/decimal.dart';
+import 'package:aqua/features/settings/manage_assets/providers/manage_assets_provider.dart';
 
 /// ---------------------
 /// Amount
@@ -37,21 +39,85 @@ class UserEnteredAmountStateNotifier extends AutoDisposeNotifier<Decimal?> {
 
   Future<bool> _validateAmount(Decimal? amount) async {
     if (amount == null || amount == Decimal.zero) {
+      ref.read(sendAmountErrorProvider.notifier).state = 
+        AmountParsingException(AmountParsingExceptionType.emptyAmount);
       return false;
     }
 
     try {
       final asset = ref.read(sendAssetProvider);
-      final assetBalanceInSats =
-          await ref.read(balanceProvider).getBalance(asset);
-      final amountWithPrecision =
-          ref.read(enteredAmountWithPrecisionProvider(amount));
+      final manageAssets = ref.read(manageAssetsProvider);
+      
+      // Validación especial para swaps BTC/L-BTC
+      if (asset.isSwapBtcLbtc) {
+        try {
+          // Usar el asset base (LBTC) para validaciones
+          final baseAsset = manageAssets.getBaseAsset(asset);
+          
+          // Convertir el monto ingresado a satoshis usando LBTC como referencia
+          final isFiatEntry = ref.read(isFiatInputProvider);
+          final amountInSats = isFiatEntry 
+              ? ref.read(fiatToSatsAsIntProvider((baseAsset, amount))).asData?.value ?? 0
+              : (amount * DecimalExt.fromAssetPrecision(baseAsset.precision)).toInt();
+          
+          logger.d('''
+          [Send][Amount] Validando monto para swap BTC/L-BTC:
+          - Monto ingresado: $amount
+          - Monto en sats: $amountInSats
+          - Es entrada en fiat: $isFiatEntry
+          - Precisión base: ${baseAsset.precision}
+          ''');
+          
+          // Monto mínimo diferente para testnet
+          final minSats = asset.isSwapTestnet ? 1000 : 25000;
+          
+          if (amountInSats < minSats) {
+            final minAmount = isFiatEntry
+                ? ref.read(satsToFiatDisplayWithSymbolProvider(minSats)).asData?.value ?? "$minSats sats"
+                : "$minSats sats";
+            
+            ref.read(sendAmountErrorProvider.notifier).state = AmountParsingException(
+              AmountParsingExceptionType.belowSendMin,
+              amount: minAmount
+            );
+            return false;
+          }
+          
+          // Validar balance
+          final balance = await ref.read(balanceProvider).getBalance(baseAsset);
+          if (amountInSats > balance) {
+            ref.read(insufficientBalanceProvider.notifier).state = 
+                InsufficientFundsType.sendAmount;
+            ref.read(sendAmountErrorProvider.notifier).state = 
+                AmountParsingException(AmountParsingExceptionType.notEnoughFunds);
+            return false;
+          }
+          
+          ref.read(sendAmountErrorProvider.notifier).state = null;
+          return true;
+        } catch (e) {
+          logger.e('[Send][Amount] Error validando monto para swap: $e');
+          if (e is AmountParsingException) {
+            ref.read(sendAmountErrorProvider.notifier).state = e;
+          } else {
+            ref.read(sendAmountErrorProvider.notifier).state = AmountParsingException(
+              AmountParsingExceptionType.belowMin,
+              amount: e.toString()
+            );
+          }
+          return false;
+        }
+      }
+
+      // Validación normal para otros assets
+      final assetBalanceInSats = await ref.read(balanceProvider).getBalance(asset);
+      final amountWithPrecision = ref.read(enteredAmountWithPrecisionProvider(amount));
       final minMax = sendMinMax();
       logger.d(
           '[Send][Amount] validate amount - assetBalanceInSats: $assetBalanceInSats - amountWithPrecision: $amountWithPrecision');
 
-      // check insufficient funds for send amount
-      if (amountWithPrecision > assetBalanceInSats) {
+      // check insufficient funds for send amount - skip for swaps BTC/L-BTC
+      if (!asset.isSwapBtcLbtc && amountWithPrecision > assetBalanceInSats) {
         ref.read(insufficientBalanceProvider.notifier).state =
             InsufficientFundsType.sendAmount;
         throw AmountParsingException(AmountParsingExceptionType.notEnoughFunds);
@@ -180,10 +246,24 @@ final enteredAmountWithPrecisionProvider =
     StateProvider.family.autoDispose<int, Decimal>((ref, amount) {
   final asset = ref.watch(sendAssetProvider);
 
-  // convert from fiat input to sats if needed
+  // Para swaps BTC/L-BTC, usar LBTC como referencia
+  if (asset.isSwapBtcLbtc) {
+    final assets = ref.read(assetsProvider).asData?.value ?? [];
+    final lbtcAsset = assets.firstWhere((a) => a.isLBTC);
+    
+    final isFiatEntry = ref.watch(isFiatInputProvider);
+    if (isFiatEntry) {
+      return ref.watch(fiatToSatsAsIntProvider((lbtcAsset, amount))).asData?.value ?? 0;
+    } else {
+      return (amount * DecimalExt.fromAssetPrecision(lbtcAsset.precision)).toInt();
+    }
+  }
+
+  // Para otros assets
   final isFiatEntry = ref.watch(isFiatInputProvider);
   final shouldConvertToSats =
       isFiatEntry && (asset.isBTC || asset.isLBTC || asset.isLightning);
+  
   if (shouldConvertToSats) {
     final amountInSats =
         ref.watch(fiatToSatsAsIntProvider((asset, amount))).asData?.value ?? 0;

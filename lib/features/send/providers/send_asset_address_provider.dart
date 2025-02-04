@@ -86,9 +86,14 @@ class SendAssetInputParser {
       if (parsedAddress != null &&
           parsedAddress.asset != null &&
           asset.isCompatibleWith(parsedAddress.asset!) == false) {
+        print('[DEBUG] Throwing nonMatchingAssetId exception');
+        print('[DEBUG] Expected asset: ${parsedAddress.asset?.id}');
+        print('[DEBUG] Received asset: ${asset.id}');
+        print('[DEBUG] Asset compatibility check failed');
         ref.read(sendAddressErrorProvider.notifier).state =
             AddressParsingException(
-                AddressParsingExceptionType.nonMatchingAssetId);
+                AddressParsingExceptionType.nonMatchingAssetId,
+                customMessage: 'Expected: ${parsedAddress.asset?.id}, Received: ${asset.id}');
       }
 
       // amount
@@ -117,19 +122,49 @@ class SendAssetInputParser {
 
       // asset
       if (parsedAddress != null && parsedAddress.asset != null) {
-        // reset asset
-        // there is one except that if the scanned asset resolves as l-btc because a plain liquid address was scanned, and we are already on a liquid asset, then don't reset the asset to l-btc. Stay on the more specific liquid asset|
-        final originalAssetIsLiquidButNotLBTC =
-            ref.read(manageAssetsProvider).isLiquidButNotLBTC(asset);
-        final scannedAssetResolvesToLBTC =
-            ref.read(manageAssetsProvider).isLBTC(parsedAddress.asset!);
-        if (originalAssetIsLiquidButNotLBTC && scannedAssetResolvesToLBTC) {
-          // do nothing - stay on original liquid asset
-        } else {
-          ref.read(sendAssetProvider.notifier).state = parsedAddress.asset!;
-          logger.d("[Send][Asset] parsed asset: ${parsedAddress.asset!.name}");
+        print('[DEBUG] Checking asset compatibility');
+        print('[DEBUG] Parsed asset: ${parsedAddress.asset!.id}');
+        print('[DEBUG] Current asset: ${asset.id}');
+        print('[DEBUG] Is compatible: ${asset.isCompatibleWith(parsedAddress.asset!)}');
+        
+        // Permitir direcciones BTC y Liquid para el swap
+        if (asset.id.startsWith('swap-') && 
+            (parsedAddress.asset!.isBTC || parsedAddress.asset!.isLBTC)) {
+          logger.d('[Swap] Usando dirección Bitcoin o Liquid para swap');
+          return; // Saltar validación de prefijo
+        }
+
+        if (asset.isCompatibleWith(parsedAddress.asset!) == false) {
+          print('[DEBUG] Assets are not compatible');
+          ref.read(sendAddressErrorProvider.notifier).state =
+              AddressParsingException(
+                  AddressParsingExceptionType.nonMatchingAssetId,
+                  customMessage: 'Expected: ${parsedAddress.asset?.id}, Received: ${asset.id}');
         }
       }
+
+      // Excepción para swap BTC/L-BTC
+      if (asset.id.startsWith('swap-') && parsedAddress?.asset != null) {
+        logger.d('[Swap] Validación especial para swap');
+        if (!parsedAddress!.asset!.isBTC && !parsedAddress.asset!.isLBTC) {
+          throw Exception('Solo se permiten direcciones Bitcoin o Liquid para el swap');
+        }
+        return;
+      }
+
+      // Validación de prefijos básica
+      if (asset.isBTC && 
+          !parsedAddress!.address.startsWith('bc1') && 
+          !parsedAddress.address.startsWith('tb1')) {
+        throw Exception('Dirección Bitcoin no válida');
+      }
+      if (asset.isLiquid && 
+          !parsedAddress!.address.startsWith('lq') && 
+          !parsedAddress.address.startsWith('VJ') && 
+          !parsedAddress.address.startsWith('ert')) {
+        throw Exception('Dirección Liquid no válida');
+      }
+
       ref.read(sendAddressErrorProvider.notifier).state = null;
     } on AddressParsingException catch (e) {
       ref.read(sendAddressErrorProvider.notifier).state = e;

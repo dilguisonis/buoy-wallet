@@ -18,7 +18,7 @@ class BoltzCreateSwapRequest {
     required this.refundPublicKey,
     required this.invoice,
     this.pairHash,
-    this.referralId = boltzReferralId,
+    this.referralId = "buoy",
   });
 
   factory BoltzCreateSwapRequest.fromJson(Map<String, dynamic> json) {

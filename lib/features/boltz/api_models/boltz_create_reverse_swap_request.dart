@@ -26,7 +26,7 @@ class BoltzCreateReverseSwapRequest {
     this.address,
     this.addressSignature,
     this.pairHash,
-    this.referralId = boltzReferralId,
+    this.referralId = "buoy",
   });
 
   factory BoltzCreateReverseSwapRequest.fromJson(Map<String, dynamic> json) {

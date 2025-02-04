@@ -401,207 +401,275 @@ class SendAssetScreen extends HookConsumerWidget {
           iconBackgroundColor: Theme.of(context).colors.altScreenSurface,
         ),
         backgroundColor: Theme.of(context).colors.altScreenBackground,
-        body: Container(
-          padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 32.h),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              //ANCHOR - Logo
-              AssetIcon(
-                assetId: asset.id,
-                assetLogoUrl: asset.logoUrl,
-                size: 60.r,
-              ),
-              SizedBox(height: 20.h),
-              //ANCHOR - Balance Amount & Symbol
-              Text(
-                "$assetBalanceDisplay ${asset.ticker}",
-                style: Theme.of(context).textTheme.headlineLarge,
-              ),
-              SizedBox(height: 14.h),
-              //ANCHOR - Balance USD Equivalent
-              if (asset.shouldShowConversionOnSend) ...[
-                Container(
-                  decoration: BoxDecoration(
-                    color:
-                        Theme.of(context).colors.usdContainerSendRecieveAssets,
-                    borderRadius: BorderRadius.circular(30.r),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 32.h),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  //ANCHOR - Logo
+                  AssetIcon(
+                    assetId: asset.id,
+                    assetLogoUrl: asset.logoUrl,
+                    size: 60.r,
                   ),
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 20.w, vertical: 5.h),
-                  child: Text(
-                    assetBalanceFiatAmount,
-                    style: Theme.of(context).textTheme.titleMedium,
+                  SizedBox(height: 20.h),
+                  //ANCHOR - Balance Amount & Symbol
+                  Text(
+                    "$assetBalanceDisplay ${asset.ticker}",
+                    style: Theme.of(context).textTheme.headlineLarge,
                   ),
-                ),
-              ],
-              SizedBox(height: 40.h),
-              //ANCHOR - Address Input
-              AddressInputView(
-                hintText: asset.isLightning
-                    ? AppLocalizations.of(context)!
-                        .sendAssetScreenLightningInputHint
-                    : AppLocalizations.of(context)!.sendAssetScreenInputHint,
-                disabled: disableUI.value == true,
-                controller: addressInputController,
-                onPressed: () async {
-                  //TODO: Change logic for text input
-                  SendAssetArguments result = await Navigator.of(context)
-                          .pushNamed(
-                              QrScannerScreen.routeName,
-                              arguments: QrScannerScreenArguments(
-                                  asset: asset,
-                                  parseAddress: true,
-                                  network: arguments.value.network,
-                                  onSuccessAction: QrOnSuccessAction.pull))
-                      as SendAssetArguments;
-
-                  extractAddressInputValues(result);
-                },
-              ),
-              SizedBox(height: 20.h),
-              //ANCHOR - Amount Input
-              SendAssetAmountInput(
-                  disabled: useAllFunds ||
-                      asset.shouldDisableEditAmountOnSend ||
-                      disableUI.value == true,
-                  controller: amountInputController,
-                  symbol: fromSymbol,
-                  allowUsdToggle: asset.shouldAllowUsdToggleOnSend),
-
-              SizedBox(height: 18.h),
-              if (asset.isSideshift) ...{
-                const AssetAmountRangePanel()
-              } else if (asset.isLightning) ...{
-                Row(
-                  children: <Widget>[
-                    Text(
-                      '${AppLocalizations.of(context)!.min}: $boltzMinString sats',
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                    const Spacer(),
-                    Text(
-                      '${AppLocalizations.of(context)!.max}: $boltzMaxString sats',
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                  ],
-                )
-              } else ...{
-                Row(
-                  children: [
-                    //ANCHOR - Conversion
-                    if (amountInFiat != null &&
-                        asset.shouldShowConversionOnSend) ...{
-                      Text("≈ $amountInFiat",
-                          style: const TextStyle(fontWeight: FontWeight.bold)),
-                    } else if (fiatToAssetAmountConverted != null) ...{
-                      Text(
-                          "≈ $fiatToAssetAmountConverted ${arguments.value.symbol}"),
-                    },
-                    const Spacer(),
-                    //ANCHOR - Use All Funds Button
-                    //TODO: Temp disable the "Used all funds" button if `isUsdInput` because the logic is unnecessary complex without a refactor of how we calculate our amounts
-                    if (asset.shouldShowUseAllFundsButton && !isUsdInput) ...[
-                      TextButton(
-                        onPressed: disableUI.value == true
-                            ? null
-                            : () {
-                                ref.read(useAllFundsProvider.notifier).state =
-                                    !useAllFunds;
-                                if (useAllFunds == true) {
-                                  // reset amount input
-                                  amountInputController.text = '';
-                                } else {
-                                  amountInputController.text = isUsdInput
-                                      ? assetBalanceFiatAmount
-                                      : assetBalanceDisplay;
-                                }
-                              },
-                        style: TextButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4.r),
-                            side: useAllFunds
-                                ? BorderSide.none
-                                : BorderSide(
-                                    color: Theme.of(context)
-                                        .colors
-                                        .roundedButtonOutlineColor,
-                                    width: 2.w,
-                                  ),
-                          ),
-                          foregroundColor: useAllFunds
-                              ? Theme.of(context).colorScheme.onPrimary
-                              : Theme.of(context).colorScheme.onBackground,
-                          backgroundColor: useAllFunds
-                              ? Theme.of(context).colorScheme.primary
-                              : null,
-                        ),
-                        child: Text(AppLocalizations.of(context)!
-                            .sendAssetScreenUseAllFundsButton),
+                  SizedBox(height: 14.h),
+                  //ANCHOR - Balance USD Equivalent
+                  if (asset.shouldShowConversionOnSend) ...[
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colors.usdContainerSendRecieveAssets,
+                        borderRadius: BorderRadius.circular(30.r),
                       ),
-                    ],
+                      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 5.h),
+                      child: Text(
+                        assetBalanceFiatAmount,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                    ),
                   ],
-                )
-              },
-              const Spacer(),
-              //ANCHOR - Spinner
-              if (isSpinnerVisible.value) ...[
-                CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation(
-                    Theme.of(context).colorScheme.secondaryContainer,
+                  SizedBox(height: 40.h),
+                  //ANCHOR - Address Input
+                  AddressInputView(
+                    hintText: asset.isLightning
+                        ? AppLocalizations.of(context)!.sendAssetScreenLightningInputHint
+                        : AppLocalizations.of(context)!.sendAssetScreenInputHint,
+                    disabled: disableUI.value == true,
+                    controller: addressInputController,
+                    onPressed: () async {
+                      SendAssetArguments result = await Navigator.of(context)
+                              .pushNamed(
+                                  QrScannerScreen.routeName,
+                                  arguments: QrScannerScreenArguments(
+                                      asset: asset,
+                                      parseAddress: true,
+                                      network: arguments.value.network,
+                                      onSuccessAction: QrOnSuccessAction.pull))
+                          as SendAssetArguments;
+
+                      extractAddressInputValues(result);
+                    },
                   ),
-                ),
-              ],
-              const Spacer(),
-              //ANCHOR - Fixed Error
-              CustomError(errorMessage: fixedErrorMessage.value),
-              SizedBox(height: 20.h),
-              //ANCHOR - Button
-              SizedBox(
-                width: double.maxFinite,
-                child: AquaElevatedButton(
-                  onPressed:
-                      validationError.value == null && disableUI.value == false
-                          ? () {
-                              // call boltz if lightning
-                              if (asset.isLightning) {
-                                performBoltzOperations(
-                                    context, ref, address.value, showSpinner);
-                              }
-                              // call sideshift
-                              else if (asset.isSideshift) {
-                                performSideShiftOperations(
-                                    context,
-                                    ref,
-                                    address.value,
-                                    disableUI,
-                                    fixedErrorMessage,
-                                    showSpinner);
-                              }
-                              // otherwise push to next screen
-                              else {
-                                Navigator.of(context).pushNamed(
-                                  SendAssetReviewScreen.routeName,
-                                  arguments: SendAssetArguments.fromAsset(asset)
-                                      .copyWith(
+                  SizedBox(height: 20.h),
+                  //ANCHOR - Amount Input
+                  SendAssetAmountInput(
+                      disabled: useAllFunds ||
+                          asset.shouldDisableEditAmountOnSend ||
+                          disableUI.value == true,
+                      controller: amountInputController,
+                      symbol: fromSymbol,
+                      allowUsdToggle: asset.shouldAllowUsdToggleOnSend),
+
+                  SizedBox(height: 18.h),
+                  if (asset.isSideshift) ...{
+                    const AssetAmountRangePanel()
+                  } else if (asset.isLightning) ...{
+                    Row(
+                      children: <Widget>[
+                        Text(
+                          '${AppLocalizations.of(context)!.min}: $boltzMinString sats',
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                        const Spacer(),
+                        Text(
+                          '${AppLocalizations.of(context)!.max}: $boltzMaxString sats',
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                      ],
+                    )
+                  } else ...{
+                    Row(
+                      children: [
+                        //ANCHOR - Conversion
+                        if (amountInFiat != null &&
+                            asset.shouldShowConversionOnSend) ...{
+                          Text("≈ $amountInFiat",
+                              style: const TextStyle(fontWeight: FontWeight.bold)),
+                        } else if (fiatToAssetAmountConverted != null) ...{
+                          Text(
+                              "≈ $fiatToAssetAmountConverted ${arguments.value.symbol}"),
+                        },
+                        const Spacer(),
+                        //ANCHOR - Use All Funds Button
+                        if (asset.shouldShowUseAllFundsButton && !isUsdInput) ...[
+                          TextButton(
+                            onPressed: disableUI.value == true
+                                ? null
+                                : () {
+                                    ref.read(useAllFundsProvider.notifier).state =
+                                        !useAllFunds;
+                                    if (useAllFunds == true) {
+                                      amountInputController.text = '';
+                                    } else {
+                                      amountInputController.text = isUsdInput
+                                          ? assetBalanceFiatAmount
+                                          : assetBalanceDisplay;
+                                    }
+                                  },
+                            style: TextButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4.r),
+                                side: useAllFunds
+                                    ? BorderSide.none
+                                    : BorderSide(
+                                        color: Theme.of(context)
+                                            .colors
+                                            .roundedButtonOutlineColor,
+                                        width: 2.w,
+                                      ),
+                              ),
+                              foregroundColor: useAllFunds
+                                  ? Theme.of(context).colorScheme.onPrimary
+                                  : Theme.of(context).colorScheme.onBackground,
+                              backgroundColor: useAllFunds
+                                  ? Theme.of(context).colorScheme.primary
+                                  : null,
+                            ),
+                            child: Text(AppLocalizations.of(context)!
+                                .sendAssetScreenUseAllFundsButton),
+                          ),
+                        ],
+                      ],
+                    )
+                  },
+                  SizedBox(height: 20.h),
+                  //ANCHOR - Spinner
+                  if (isSpinnerVisible.value) ...[
+                    CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation(
+                        Theme.of(context).colorScheme.secondaryContainer,
+                      ),
+                    ),
+                  ],
+                  SizedBox(height: 20.h),
+                  //ANCHOR - Error Message
+                  if (fixedErrorMessage.value != null)
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 16.h),
+                      child: CustomError(
+                        errorMessage: fixedErrorMessage.value!,
+                        maxLines: 3,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  //ANCHOR - Validation Error
+                  if (validationError.value != null)
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 16.h),
+                      child: CustomError(
+                        errorMessage: validationError.value!.toLocalizedString(context),
+                        maxLines: 3,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  //ANCHOR - Button
+                  Padding(
+                    padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+                    child: SizedBox(
+                      width: double.maxFinite,
+                      child: AquaElevatedButton(
+                        onPressed: validationError.value == null && disableUI.value == false
+                            ? () async {
+                                try {
+                                  // call boltz if lightning
+                                  if (asset.isLightning) {
+                                    performBoltzOperations(
+                                        context, ref, address.value, showSpinner);
+                                  }
+                                  // call sideshift
+                                  else if (asset.isSideshift) {
+                                    performSideShiftOperations(
+                                        context,
+                                        ref,
+                                        address.value,
+                                        disableUI,
+                                        fixedErrorMessage,
+                                        showSpinner);
+                                  }
+                                  // Si es un chain swap, preparar y crear el swap antes de navegar
+                                  else if (asset.isChainSwap) {
+                                    showSpinner(true);
+                                    
+                                    try {
+                                      final network = await ref.read(liquidProvider).getNetwork();
+                                      final electrumUrl = network!.electrumUrl!;
+                                      final mnemonic = await ref.read(liquidProvider).generateMnemonic12();
+                                      final mnemonicString = mnemonic!.join(' ');
+
+                                      // Preparar y crear el swap
+                                      final swapId = await ref.read(boltzChainSwapProvider.notifier)
+                                          .prepareAndCreateSwap(
+                                            mnemonic: mnemonicString,
+                                            index: 0,
+                                            btcElectrumUrl: electrumUrl,
+                                            lbtcElectrumUrl: electrumUrl,
+                                            boltzUrl: ref.read(boltzEnvConfigProvider).apiUrl,
+                                            referralId: 'buoy',
+                                            amount: amount!.toInt(),
+                                          );
+
+                                      showSpinner(false);
+
+                                      if (context.mounted) {
+                                        // Iniciar monitoreo antes de navegar
+                                        await ref.read(boltzChainSwapProvider.notifier).monitorSwapStatus();
+                                        
+                                        Navigator.of(context).pushNamed(
+                                          SendAssetReviewScreen.routeName,
+                                          arguments: SendAssetArguments.fromAsset(asset).copyWith(
+                                            userEnteredAmount: isUsdInput
+                                                ? fiatToAssetAmountConverted
+                                                : amount,
+                                            address: address.value!,
+                                            recipientAddress: address.value!,
+                                            externalServiceTxId: swapId,
+                                          ),
+                                        );
+                                      }
+                                    } catch (e) {
+                                      showSpinner(false);
+                                      context.showErrorSnackbar(e.toString());
+                                    }
+                                  }
+                                  // otherwise push to next screen
+                                  else {
+                                    Navigator.of(context).pushNamed(
+                                      SendAssetReviewScreen.routeName,
+                                      arguments: SendAssetArguments.fromAsset(asset).copyWith(
                                           userEnteredAmount: isUsdInput
                                               ? fiatToAssetAmountConverted
                                               : amount,
                                           address: address.value!,
                                           recipientAddress: address.value!),
-                                );
+                                    );
+                                  }
+                                } catch (e) {
+                                  showSpinner(false);
+                                  context.showErrorSnackbar(e.toString());
+                                }
                               }
-                            }
-                          : null,
-                  child: Text(
-                    validationError.value != null
-                        ? validationError.value!.toLocalizedString(context)
-                        : AppLocalizations.of(context)!
-                            .sendAssetAmountScreenContinueButton,
+                              : null,
+                        child: Text(
+                          validationError.value != null
+                              ? validationError.value!.toLocalizedString(context)
+                              : AppLocalizations.of(context)!
+                                  .sendAssetAmountScreenContinueButton,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

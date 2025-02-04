@@ -14,6 +14,7 @@ import 'package:aqua/utils/utils.dart';
 import 'package:decimal/decimal.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:intl/intl.dart';
+import 'package:aqua/features/settings/manage_assets/providers/manage_assets_provider.dart';
 
 class SendAssetAmountScreen extends HookConsumerWidget {
   const SendAssetAmountScreen({super.key, this.arguments});
@@ -31,6 +32,7 @@ class SendAssetAmountScreen extends HookConsumerWidget {
     final disableUI = useState<bool>(true);
     final error = ref.watch(sendAmountErrorProvider);
     final isSpinnerVisible = useState<bool>(true);
+    final manageAssets = ref.watch(manageAssetsProvider);
 
     // asset, address, amount
     final asset = ref.watch(sendAssetProvider);
@@ -48,7 +50,7 @@ class SendAssetAmountScreen extends HookConsumerWidget {
     final assetBalanceDisplay =
         ref.watch(formatterProvider).formatAssetAmountDirect(
               amount: assetBalanceInSats ?? 0,
-              precision: asset.precision,
+              precision: manageAssets.getAssetPrecision(asset),
             );
     final assetBalanceFiatDisplay = ref
             .watch(satsToFiatDisplayWithSymbolProvider(assetBalanceInSats ?? 0))
@@ -156,7 +158,7 @@ class SendAssetAmountScreen extends HookConsumerWidget {
 
             //ANCHOR - Balance Amount & Symbol
             Text(
-              "$assetBalanceDisplay ${asset.ticker}",
+              "$assetBalanceDisplay ${manageAssets.getDisplayTicker(asset)}",
               style: Theme.of(context).textTheme.headlineLarge,
             ),
             SizedBox(height: 14.h),
@@ -180,7 +182,9 @@ class SendAssetAmountScreen extends HookConsumerWidget {
             //ANCHOR - Amount Input
             SendAssetAmountInput(
                 controller: amountInputController,
-                symbol: isFiatInput ? currentRate.currency.value : asset.ticker,
+                symbol: isFiatInput 
+                    ? currentRate.currency.value 
+                    : manageAssets.getDisplayTicker(asset),
                 onChanged: (String value) {
                   logger.d(
                       "[Send][Amount] send amount screen - amountInputController onChanged: $value");
@@ -202,7 +206,7 @@ class SendAssetAmountScreen extends HookConsumerWidget {
                 },
                 allowUsdToggle: asset.shouldAllowUsdToggleOnSend,
                 disabled: disableAmountField,
-                precision: asset.precision),
+                precision: manageAssets.getAssetPrecision(asset)),
 
             SizedBox(height: 2.h),
 

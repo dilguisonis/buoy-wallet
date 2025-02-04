@@ -1,6 +1,6 @@
 //ANCHOR - SwapType
 
-enum SwapType { submarine, reversesubmarine }
+enum SwapType { submarine, reversesubmarine, chain }
 
 //ANCHOR - OrderSide
 
